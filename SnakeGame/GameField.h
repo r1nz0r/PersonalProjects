@@ -1,27 +1,39 @@
 ﻿#pragma once
 #include <vector>
 
-enum class CellState
+#include "Food.h"
+#include "IDrawable.h"
+#include "Walls.h"
+
+enum class ECellState
 {
-    Empty,
-    Snake,
-    Apple,
-    Walls
+	Empty,
+	SnakeHead,
+	SnakeBody,
+	Food,
+	Walls
 };
 
 struct Cell
 {
-    CellState state = CellState::Empty;
+	ECellState state = ECellState::Empty;
 };
 
-class GameField
+class GameField : public IDrawable
 {
 public:
-    GameField() = default;
-    //GameField(const int width,const int height) : _cells(height, std::vector<Cell>(width)) { }
-    CellState GetCellState(const int x,const int y) const { return _cells[y][x].state; }
-    void SetCellState(const int x,const int y,const CellState state) { _cells[y][x].state = state; }
-
+	GameField(Food& food, Wall& wall) : _food(food), _wall(wall) {}
+	void Initialize();
+	ECellState GetCellState(const uint32_t x, const uint32_t y) const;
+	ECellState GetCellState(const sf::Vector2u& position) const;
+	void SetCellState(const uint32_t x, const uint32_t y, const ECellState state);
+	void SetCellState(const sf::Vector2u& position, const ECellState state);
+	void Clear();
+	void Print() const; // Only for debug
+	virtual void Draw(sf::RenderWindow& window) override;
 private:
-    std::vector<std::vector<Cell>> _cells;
+	Food& _food;
+	Wall& _wall;
+	std::vector<std::vector<Cell>> _cells;
+	std::vector<std::vector<Cell>> _emptyCells;
 };

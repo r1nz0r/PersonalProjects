@@ -3,10 +3,10 @@
 class UIManager
 {
 public:
-    void ShowMainMenu();
-    void ShowDifficultyMenu();
-    void ShowHighScoresMenu();
-    void ShowSettingsMenu();
-    void Update();
-    void HandleInput();
+	void ShowMainMenu();
+	void ShowDifficultyMenu();
+	void ShowHighScoresMenu();
+	void ShowSettingsMenu();
+	void Update();
+	void HandleInput();
 };

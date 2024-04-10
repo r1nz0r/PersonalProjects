@@ -1,37 +1,61 @@
-﻿#include "Snake.h"
+﻿#include <SFML/Graphics/RenderWindow.hpp>
+#include "Snake.h"
 #include "GameSettings.h"
-#include <SFML/Graphics/RenderWindow.hpp>
+#include "SpriteUtils.h"
 
 void Snake::Initialize(const sf::Texture& texture)
 {
-    _headSprite.setTexture(texture);
-    _headSprite.setTextureRect(sf::IntRect(8, 24, GameSettings::TILE_SIZE.x, GameSettings::TILE_SIZE.y));
-    _headSprite.setOrigin(GameSettings::TILE_SIZE.x / 2.f, GameSettings::TILE_SIZE.y / 2.f);
-    _headSprite.setScale(GameSettings::TILE_SCALE);
-    _headSprite.setPosition(sf::Vector2f(320.f, 320.f));
+	_headPosition = GameSettings::SNAKE_START_POSITION;
 
-    _bodySprite.setTexture(texture);
-    _bodySprite.setTextureRect(sf::IntRect(40, 24, GameSettings::TILE_SIZE.x, GameSettings::TILE_SIZE.y));
-    _bodySprite.setOrigin(GameSettings::TILE_SIZE.x / 2.f, GameSettings::TILE_SIZE.y / 2.f);
-    _bodySprite.setScale(GameSettings::TILE_SCALE);
-    _bodySprite.setPosition(sf::Vector2f(320.f, 352.f));
+	sf::Vector2f tileSize(sf::Vector2f(GameSettings::TILE_SIZE.x, GameSettings::TILE_SIZE.y));
+	sf::Vector2f tileOrigin(tileSize.x / 2.f, tileSize.y / 2.f);
+	sf::Vector2f tileScale(GameSettings::TILE_SCALE);
+
+	initializeSprite(_headSprite, texture, tileOrigin, tileScale, sf::IntRect(8, 24, tileSize.x, tileSize.y));
+	initializeSprite(_bodySprite, texture, tileOrigin, tileScale, sf::IntRect(40, 24, tileSize.x, tileSize.y));
+
+	_headSprite.setPosition(sf::Vector2f(_headPosition));
 }
 
 void Snake::Grow()
 {
+	_bodyPositions.push_back(_lastHeadPosition);
 }
 
-void Snake::Draw(sf::RenderWindow& window) const
+void Snake::Reset()
 {
-    window.draw(_headSprite);
-    window.draw(_bodySprite);
+	_headPosition = GameSettings::SNAKE_START_POSITION;
+	_bodyPositions.clear();
 }
 
-void Snake::SetPosition(const sf::Vector2u& position)
+void Snake::Draw(sf::RenderWindow& window)
 {
+	window.draw(_headSprite);
+
+	for (const auto& bodyPosition : _bodyPositions)
+	{
+		_bodySprite.setPosition(sf::Vector2f(bodyPosition));
+		window.draw(_bodySprite);
+	}
+}
+
+void Snake::SetHeadPosition(const sf::Vector2u& position)
+{
+	_lastHeadPosition = _headPosition;
+	_headPosition = position;
+	_headSprite.setPosition(sf::Vector2f(_headPosition));
+}
+
+void Snake::UpdateBodyPositions()
+{
+	if (_bodyPositions.empty())
+		return;
+
+	std::rotate(_bodyPositions.begin(), _bodyPositions.end() - 1, _bodyPositions.end());
+	_bodyPositions.front() = _headPosition;  // Update head position after rotation
 }
 
 void Snake::SetHeadRotation(const float rotationAngle)
 {
-    _headSprite.setRotation(rotationAngle);
+	_headSprite.setRotation(rotationAngle);
 }

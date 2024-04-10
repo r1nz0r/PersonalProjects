@@ -7,6 +7,6 @@ public:
     Wall() = default;
     ~Wall() override = default;
 
-    //Пока не придумал доп. функционал, но, возможно, добавлю позже.
+    
 };
 
