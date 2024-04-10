@@ -1,1 +1,1 @@
-# XYZ_PersonalProjects
+# PersonalProjects
