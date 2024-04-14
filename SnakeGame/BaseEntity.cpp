@@ -20,7 +20,7 @@ void BaseEntity::Initialize(const sf::Texture& texture, const sf::Vector2i& tile
 
 void BaseEntity::SetPosition(const sf::Vector2u& position)
 {
-	_sprite.setPosition(sf::Vector2f(position));
+	_sprite.setPosition(sf::Vector2f(position.x, position.y + GameSettings::UI_HUD_OFFSET_Y));
 	_position = position;
 }
 

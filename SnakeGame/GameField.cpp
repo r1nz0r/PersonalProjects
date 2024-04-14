@@ -107,14 +107,14 @@ void GameField::Draw(sf::RenderWindow& window)
 		for (size_t x = 0; x < GameSettings::sCellCountX; ++x)
 		{
 			sf::RectangleShape cellShape(sf::Vector2f(cellSize, cellSize));
-			cellShape.setPosition(x * cellSize, y * cellSize + GameSettings::UI_HUD_OFFSET_Y);
+			cellShape.setPosition(x * cellSize, y * cellSize);
 
 			ECellState state = GetCellState(x, y);
 
 			switch (state)
 			{
 			case ECellState::Walls:
-				_wall.SetPosition(sf::Vector2u(x * cellSize, y * cellSize + GameSettings::UI_HUD_OFFSET_Y));
+				_wall.SetPosition(sf::Vector2u(x * cellSize, y * cellSize));
 				_wall.Draw(window);
 				break;
 			default:

@@ -34,7 +34,7 @@ void Snake::Draw(sf::RenderWindow& window)
 
 	for (const auto& bodyPosition : _bodyPositions)
 	{
-		_bodySprite.setPosition(sf::Vector2f(bodyPosition));
+		_bodySprite.setPosition(sf::Vector2f(bodyPosition.x, bodyPosition.y + GameSettings::UI_HUD_OFFSET_Y));
 		window.draw(_bodySprite);
 	}
 }
@@ -43,7 +43,7 @@ void Snake::SetHeadPosition(const sf::Vector2u& position)
 {
 	_lastHeadPosition = _headPosition;
 	_headPosition = position;
-	_headSprite.setPosition(sf::Vector2f(_headPosition));
+	_headSprite.setPosition(sf::Vector2f(_headPosition.x, _headPosition.y + GameSettings::UI_HUD_OFFSET_Y));
 }
 
 void Snake::UpdateBodyPositions()
