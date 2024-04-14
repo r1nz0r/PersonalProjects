@@ -48,7 +48,7 @@ void Game::Start()
 {
 	_snake.Reset();
 	_food.Respawn(GenerateFoodPosition());
-	_snakeController.SetDirection(EDirection::None);
+	_snake.SetDirection(EDirection::None);
 	_currentGameState = EGameState::Playing;
 }
 
@@ -123,7 +123,7 @@ void Game::DrawObject(IDrawable& object)
 
 void Game::UpdatePlayingState(const float deltaTime)
 {
-	_snakeController.Update(deltaTime);
+	_snake.Update(deltaTime);
 	auto snakePosition = _snake.GetHeadPosition();
 
 	if (ECellState collisionSellState = ECellState::Empty; CheckSnakeCollision(collisionSellState))
