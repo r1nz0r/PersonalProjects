@@ -8,9 +8,13 @@
 int main()
 {
     Game* game = new Game();
-
     game->Start();
-    game->Update();
+    
+    while (game->IsWindowOpen())
+    {
+        game->Update();
+        game->Render();
+    }
 
     delete game;
     game = nullptr;

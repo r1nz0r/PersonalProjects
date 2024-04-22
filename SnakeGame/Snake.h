@@ -5,25 +5,50 @@
 
 namespace sf
 {
-    class RenderWindow;
+	class RenderWindow;
 }
+
+enum class EDirection
+{
+	Up,
+	Right,
+	Down,
+	Left,
+	None
+};
 
 class Game;
 
 class Snake : public IDrawable
 {
 public:
-    Snake() = default;
-    ~Snake() override = default;
-    void Initialize(const sf::Texture& texture);
-    void Draw(sf::RenderWindow& window) const override;
-    void SetPosition(const sf::Vector2u& position);
-    void SetHeadRotation(const float rotationAngle);
-    const sf::Vector2u& GetPosition() const {return _headPosition;}
-    void Grow();
+	EDirection GetDirection() const { return _movementDirection; }
+	Snake() = default;
+	~Snake() override = default;
+	void Initialize(const sf::Texture& texture);
+	void Draw(sf::RenderWindow& window) override;
+	void SetHeadPosition(const sf::Vector2u& position);
+	void UpdateBodyPositions();
+	const sf::Vector2u& GetHeadPosition() const { return _headPosition; }
+	const std::vector<sf::Vector2u>& GetBodyPositions() const { return _bodyPositions; }
+	void SetDirection(const EDirection newDirection);
+	const sf::Vector2u& GetVelocity() const { return _velocity; }
+	void SetVelocity();
+	void UpdatePosition(const float deltaTime);
+	void SetRotationFromDirection();
+	void Grow();
+	void Reset();
+	void Update(const float deltaTime);
+
 private:
-    sf::Vector2u _headPosition;
-    std::vector<sf::Vector2u> _bodyPositions;
-    sf::Sprite _headSprite;
-    sf::Sprite _bodySprite;
+	sf::Vector2u _headPosition;
+	sf::Vector2u _lastHeadPosition;
+	std::vector<sf::Vector2u> _bodyPositions;
+	sf::Sprite _headSprite;
+	sf::Sprite _bodySprite;
+	EDirection _movementDirection = EDirection::None;
+	float _movementTimer = 0.0f;
+	sf::Vector2u _velocity { 0, 0 };
+	const int OPPOSITE_DIRECTION_DIFF = 2;
+	sf::Vector2u DirectionToVelocity(const EDirection direction);
 };

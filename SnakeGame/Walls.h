@@ -1,12 +1,20 @@
 ﻿#pragma once
+#include <vector>
 #include "BaseEntity.h"
+#include "functional"
 
 class Wall : public BaseEntity
 {
+
 public:
     Wall() = default;
     ~Wall() override = default;
 
-    //Пока не придумал доп. функционал, но, возможно, добавлю позже.
+public:
+    virtual void SetPosition(const sf::Vector2u& position);
+
+private:
+
+    void OnPositionChanged(const sf::Vector2u& position);
 };
 
