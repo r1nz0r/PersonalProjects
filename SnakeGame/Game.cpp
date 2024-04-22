@@ -47,6 +47,8 @@ void Game::Initialize()
 
 void Game::Start()
 {
+	UIManager::GetInstance().UpdateScoreLabel(_score);
+	_score = 0;
 	_snake.Reset();
 	_food.Respawn(GenerateFoodPosition());
 	_snake.SetDirection(EDirection::None);
@@ -55,11 +57,11 @@ void Game::Start()
 
 void Game::Update()
 {
-	UIManager::GetInstance().ShowMainMenu();
 	float deltaTime = _clock.getElapsedTime().asSeconds();
 	_clock.restart();
 
 	ReadEvents();
+	
 
 	switch (_currentGameState)
 	{
@@ -151,6 +153,14 @@ void Game::RenderPlayingState()
 	DrawObject(_gameField);
 	DrawObject(_snake);
 	DrawObject(_food);
+
+	const Label* scoreLabel = UIManager::GetInstance().GetScoreLabel();
+
+	if (scoreLabel != nullptr)
+	{
+		Label tempLabel = *scoreLabel;
+		DrawObject(tempLabel);
+	}
 }
 
 bool Game::CheckSnakeCollision(ECellState& collisionCellState)
@@ -225,6 +235,8 @@ void Game::OnFoodEaten()
 
 	sf::Vector2u newFoodPosition = GenerateFoodPosition();
 	_food.Respawn(newFoodPosition);
+
+	UIManager::GetInstance().UpdateScoreLabel(_score);
 }
 
 bool Game::GetFreeGridPosition(sf::Vector2u& position)

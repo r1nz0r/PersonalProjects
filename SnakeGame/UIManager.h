@@ -1,4 +1,7 @@
 ﻿#pragma once
+#include <string>
+#include <SFML/Graphics.hpp>
+#include "Label.h"
 
 class UIManager
 {
@@ -11,7 +14,8 @@ public:
 	UIManager& operator=(UIManager&& other) noexcept = delete;
 
 	void ShowMainMenu();
-	void ShowCurrentScore();
+	void UpdateScoreLabel(const int score);
+	const Label* const GetScoreLabel() const { return _scoreLabel; }
 	void ShowDifficultyMenu();
 	void ShowHighScoresMenu();
 	void ShowSettingsMenu();
@@ -19,6 +23,9 @@ public:
 	void HandleInput();
 
 private:
-	UIManager() = default;
-	~UIManager() = default;
+	UIManager();
+	~UIManager();
+	const std::string _fontPath = R"(Resources/Fonts/Accuratist.ttf)";
+	sf::Font _mainFont;
+	Label* _scoreLabel = nullptr;
 };

@@ -23,7 +23,7 @@ public:
 
 	// Настройки окна
 	inline static const std::string GAME_TITLE = "Snake";
-	static constexpr uint32_t UI_HUD_OFFSET_Y = 200;
+	static constexpr uint32_t UI_HUD_OFFSET_Y = 100;
 	inline static const sf::Vector2u WINDOW_SIZE
 	{
 		sCellCountX * CELL_SIZE,
