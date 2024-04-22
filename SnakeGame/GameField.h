@@ -36,4 +36,6 @@ private:
 	Wall& _wall;
 	std::vector<std::vector<Cell>> _cells;
 	std::vector<std::vector<Cell>> _emptyCells;
+
+	sf::Vector2u PixelToCell(const sf::Vector2u& pixelPosition) const;
 };

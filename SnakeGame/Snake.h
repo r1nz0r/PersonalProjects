@@ -50,4 +50,5 @@ private:
 	float _movementTimer = 0.0f;
 	sf::Vector2u _velocity { 0, 0 };
 	const int OPPOSITE_DIRECTION_DIFF = 2;
+	sf::Vector2u DirectionToVelocity(const EDirection direction);
 };

@@ -3,6 +3,7 @@
 #include "Exception.h"
 #include "GameSettings.h"
 #include <random>
+#include "UIManager.h"
 
 Game::Game() : _gameField(_food, _wall)
 {
@@ -54,6 +55,7 @@ void Game::Start()
 
 void Game::Update()
 {
+	UIManager::GetInstance().ShowMainMenu();
 	float deltaTime = _clock.getElapsedTime().asSeconds();
 	_clock.restart();
 
@@ -109,13 +111,6 @@ void Game::Render()
 	_window.display();
 }
 
-sf::Vector2u Game::PixelToCell(const sf::Vector2u& pixelPosition) const
-{
-	int cellX = pixelPosition.x / GameSettings::CELL_SIZE;
-	int cellY = pixelPosition.y / GameSettings::CELL_SIZE;
-	return sf::Vector2u(cellX, cellY);
-}
-
 void Game::DrawObject(IDrawable& object)
 {
 	object.Draw(_window);
@@ -137,12 +132,12 @@ void Game::UpdatePlayingState(const float deltaTime)
 
 	try
 	{
-		_gameField.SetCellState(PixelToCell(snakePosition), ECellState::SnakeHead);
-		_gameField.SetCellState(PixelToCell(_food.GetPosition()), ECellState::Food);
+		_gameField.SetCellState(snakePosition, ECellState::SnakeHead);
+		_gameField.SetCellState(_food.GetPosition(), ECellState::Food);
 
 		for (const auto& bodyPosition : _snake.GetBodyPositions())
 		{
-			_gameField.SetCellState(PixelToCell(bodyPosition), ECellState::SnakeBody);
+			_gameField.SetCellState(bodyPosition, ECellState::SnakeBody);
 		}
 	}
 	catch (const std::out_of_range& e)
@@ -161,7 +156,7 @@ void Game::RenderPlayingState()
 bool Game::CheckSnakeCollision(ECellState& collisionCellState)
 {
 	const auto& currentSnakePosition = _snake.GetHeadPosition();
-	const ECellState snakeHeadPositionCellState = _gameField.GetCellState(PixelToCell(currentSnakePosition));
+	const ECellState snakeHeadPositionCellState = _gameField.GetCellState(currentSnakePosition);
 
 	if (snakeHeadPositionCellState == ECellState::Empty)
 	{
@@ -182,6 +177,7 @@ void Game::OnCollisionEnter(const ECellState collisionCellState)
 		break;
 	case ECellState::Food:
 		OnFoodEaten();
+		break;
 	default:
 		break;
 	}
@@ -233,7 +229,7 @@ void Game::OnFoodEaten()
 
 bool Game::GetFreeGridPosition(sf::Vector2u& position)
 {
-	auto cellState = _gameField.GetCellState(PixelToCell(position));
+	auto cellState = _gameField.GetCellState(position);
 
 	if (cellState == ECellState::Empty)
 		return true;

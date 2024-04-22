@@ -21,6 +21,7 @@ void SnakeController::HandleInput(const sf::Keyboard::Scancode& scancode)
 		//ONLY FOR DEBUG TESTS!!! DELETE AT RELEASE VERSION!!!
 	case sf::Keyboard::Scancode::Space:
 		_snake.Grow();
+		break;
 	default:
 		//Остальные клавиши нас не интересуют
 		break;

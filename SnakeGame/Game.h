@@ -46,7 +46,6 @@ private:
 	int _score;
 
 
-	sf::Vector2u PixelToCell(const sf::Vector2u& pixelPosition) const;
 	void Initialize();
 	void DrawObject(IDrawable& object);
 	void UpdatePlayingState(const float deltaTime);

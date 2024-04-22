@@ -42,7 +42,8 @@ void GameField::SetCellState(const uint32_t x, const uint32_t y, const ECellStat
 
 void GameField::SetCellState(const sf::Vector2u& position, const ECellState state)
 {
-	SetCellState(position.x, position.y, state);
+	auto positionInCell = PixelToCell(position);
+	SetCellState(positionInCell.x, positionInCell.y, state);
 }
 
 ECellState GameField::GetCellState(const uint32_t x, const uint32_t y) const
@@ -55,7 +56,8 @@ ECellState GameField::GetCellState(const uint32_t x, const uint32_t y) const
 
 ECellState GameField::GetCellState(const sf::Vector2u& position) const
 {
-	return GetCellState(position.x, position.y);
+	auto positionInCell = PixelToCell(position);
+	return GetCellState(positionInCell.x, positionInCell.y);
 }
 
 void GameField::Print() const
@@ -96,6 +98,13 @@ void GameField::Print() const
 	std::cout << std::endl;
 }
 
+sf::Vector2u GameField::PixelToCell(const sf::Vector2u& pixelPosition) const
+{
+	int cellX = pixelPosition.x / GameSettings::CELL_SIZE;
+	int cellY = pixelPosition.y / GameSettings::CELL_SIZE;
+	return sf::Vector2u(cellX, cellY);
+}
+
 void GameField::Draw(sf::RenderWindow& window)
 {
 	const float cellSize = static_cast<float>(GameSettings::CELL_SIZE);
@@ -107,7 +116,7 @@ void GameField::Draw(sf::RenderWindow& window)
 		for (size_t x = 0; x < GameSettings::sCellCountX; ++x)
 		{
 			sf::RectangleShape cellShape(sf::Vector2f(cellSize, cellSize));
-			cellShape.setPosition(x * cellSize, y * cellSize);
+			cellShape.setPosition(x * cellSize, y * cellSize + GameSettings::UI_HUD_OFFSET_Y);
 
 			ECellState state = GetCellState(x, y);
 
