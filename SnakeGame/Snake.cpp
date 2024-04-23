@@ -28,6 +28,10 @@ void Snake::Reset()
 {
 	_headPosition = GameSettings::SNAKE_START_POSITION;
 	_bodyPositions.clear();
+
+	SetHeadPosition(GameSettings::SNAKE_START_POSITION);
+	SetDirection(EDirection::Up);
+	SetRotationFromDirection();
 }
 
 void Snake::Draw(sf::RenderWindow& window)

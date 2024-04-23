@@ -50,12 +50,12 @@ void Game::Start()
 {
 	_score = 0;
 	GameSettings::SetGameDifficultySettings(_currentDifficulty);
-	_playTime.restart();
+	_playTimer.Restart();
 	_snake.Reset();
 	_food.Respawn(GenerateFoodPosition());
-	_snake.SetDirection(EDirection::None);
 	_currentGameState = EGameState::Playing;
 	UIManager::GetInstance().UpdateScoreLabel(_score);
+	UIManager::GetInstance().UpdatePlayTimeLabel(_playTimer.GetElapsedTime() - GameSettings::sGameStartDelay);
 }
 
 void Game::Update()
@@ -64,7 +64,6 @@ void Game::Update()
 	_deltaTimeClock.restart();
 
 	ReadEvents();
-
 
 	switch (_currentGameState)
 	{
@@ -78,7 +77,7 @@ void Game::Update()
 		//TODO pause logic
 		break;
 	case EGameState::GameOver:
-		//TODO game over logic
+		UpdateGameOverState();
 		break;
 	default:
 		break;
@@ -98,20 +97,21 @@ void Game::Render()
 		//TODO menu logic
 		break;
 	case EGameState::Pause:
-		//TODO pause logic
+		RenderPlayingState();
 		break;
 	case EGameState::GameOver:
-		//TODO game over logic
+		RenderPlayingState();
 		break;
 	default:
 		break;
 	}
 
-	if (_printTimer.getElapsedTime().asSeconds() >= GameSettings::sTimePerCell)
+	//Отрисовка в консоли, нужна только для дебага, в релиз версии убрать.
+	if (_printTimer.GetElapsedTime() >= GameSettings::sTimePerCell / GameSettings::GetGameDifficultySettings().timeScale)
 	{
 		_gameField.Print();
-		_printTimer.restart();
-	}
+		_printTimer.Restart();
+	}	
 
 	_window.display();
 }
@@ -123,7 +123,9 @@ void Game::DrawObject(IDrawable& object)
 
 void Game::UpdatePlayingState(const float deltaTime)
 {
-	_snake.Update(deltaTime);
+	if (_playTimer.GetElapsedTime() >= GameSettings::sGameStartDelay)
+		_snake.Update(deltaTime);
+
 	auto snakePosition = _snake.GetHeadPosition();
 
 	if (ECellState collisionSellState = ECellState::Empty; CheckSnakeCollision(collisionSellState))
@@ -150,7 +152,18 @@ void Game::UpdatePlayingState(const float deltaTime)
 		std::cout << e.what() << std::endl;
 	}
 
-	UIManager::GetInstance().UpdatePlayTimeLabel(GetPlayingTime());
+	UIManager::GetInstance().UpdatePlayTimeLabel(_playTimer.GetElapsedTime() - GameSettings::sGameStartDelay);
+}
+
+void Game::UpdateGameOverState()
+{
+	Render();
+
+	if (_gameOtherTimer.GetElapsedTime() >= GameSettings::sGameEndDelay)
+	{
+		Start();
+		_gameOtherTimer.Pause();
+	}
 }
 
 void Game::RenderPlayingState()
@@ -181,7 +194,7 @@ void Game::OnCollisionEnter(const ECellState collisionCellState)
 	{
 	case ECellState::Walls:
 	case ECellState::SnakeBody:
-		_currentGameState = EGameState::Pause;
+		OnGameOver();
 		break;
 	case ECellState::Food:
 		OnFoodEaten();
@@ -191,6 +204,12 @@ void Game::OnCollisionEnter(const ECellState collisionCellState)
 	}
 }
 
+void Game::OnGameOver()
+{
+	_currentGameState = EGameState::GameOver;
+	_gameOtherTimer.Restart();
+}
+
 void Game::OnWindowClosed()
 {
 	_window.close();
@@ -198,12 +217,17 @@ void Game::OnWindowClosed()
 
 void Game::OnKeyPressed(const sf::Keyboard::Scancode& scancode)
 {
-	if (scancode == sf::Keyboard::Scancode::P)
+	if (scancode == sf::Keyboard::Scancode::R)
 	{
 		Start();
 	}
+	if (scancode == sf::Keyboard::Scancode::P)
+	{
+		TogglePause();
+	}
 
-	_snakeController.HandleInput(scancode);
+	if (_currentGameState == EGameState::Playing && _playTimer.GetElapsedTime() >= GameSettings::sGameStartDelay)
+		_snakeController.HandleInput(scancode);
 }
 
 void Game::ReadEvents()
@@ -238,6 +262,20 @@ void Game::OnFoodEaten()
 	UIManager::GetInstance().UpdateScoreLabel(_score);
 }
 
+void Game::TogglePause()
+{
+	if (_currentGameState == EGameState::Playing)
+	{
+		_currentGameState = EGameState::Pause;
+		_playTimer.Pause();
+	}
+	else
+	{
+		_currentGameState = EGameState::Playing;
+		_playTimer.Start();
+	}
+}
+
 bool Game::GetFreeGridPosition(sf::Vector2u& position)
 {
 	auto cellState = _gameField.GetCellState(position);
@@ -254,7 +292,6 @@ uint32_t Game::GetRandomUInt(const uint32_t minValue, const uint32_t maxValue)
 	uint32_t right = randomValue % (maxValue - minValue + 1);
 	uint32_t result = minValue + right;
 	return result;
-	//return minValue + std::rand() % (maxValue - minValue + 1);
 }
 
 sf::Vector2u Game::GenerateFoodPosition()

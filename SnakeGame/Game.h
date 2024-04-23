@@ -9,6 +9,7 @@
 #include "Snake.h"
 #include "SnakeController.h"
 #include "Walls.h"
+#include "Timer.h"
 
 enum class EGameDifficulty;
 
@@ -33,7 +34,6 @@ public:
 	void Render();
 	bool IsWindowOpen() const { return _window.isOpen(); }
 	int GetScore() const { return _score; }
-	float GetPlayingTime() const { return _playTime.getElapsedTime().asSeconds(); }
 
 private:
 	const std::string _tileSetPath = R"(Resources/Textures/snake.png)";
@@ -46,14 +46,16 @@ private:
 	SnakeController _snakeController { _snake };
 	Wall _wall;
 	Food _food;
-	sf::Clock _printTimer; // Таймер для отслеживания времени для вывода состояния поля   
-	sf::Clock _playTime; // Счетчик времени от начала игровой сессии.
+	Timer _printTimer; // Таймер для отслеживания времени для вывода состояния поля.
+	Timer _playTimer; // Счетчик времени от начала игровой сессии.
+	Timer _gameOtherTimer; // Счетчик времени после смерти.
 	int _score;
 	EGameDifficulty _currentDifficulty;
 
 	void Initialize();
 	void DrawObject(IDrawable& object);
 	void UpdatePlayingState(const float deltaTime);
+	void UpdateGameOverState();
 	void RenderPlayingState();
 	bool CheckSnakeCollision(ECellState& collisionCellState);
 	void OnCollisionEnter(const ECellState collisionCellState);
@@ -62,6 +64,7 @@ private:
 	void OnKeyPressed(const sf::Keyboard::Scancode& scancode);
 	void ReadEvents();
 	void OnFoodEaten();
+	void TogglePause();
 	bool GetFreeGridPosition(sf::Vector2u& position);
 	uint32_t GetRandomUInt(const uint32_t minValue, const uint32_t maxValue);
 	sf::Vector2u GenerateFoodPosition();

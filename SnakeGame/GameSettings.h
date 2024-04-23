@@ -80,11 +80,14 @@ public:
 		GameSettings::CELL_SIZE * (GameSettings::sCellCountY - 1)
 	};
 
+	// Настройка игрового процесса
 	static void SetGameDifficultySettings(EGameDifficulty difficulty) { sDifficultySettings = sDifficultySettingsMap[difficulty]; }
 	static const DifficultySettings& GetGameDifficultySettings() { return sDifficultySettings; }
+	static constexpr float sGameStartDelay = 1.0f;
+	static constexpr float sGameEndDelay = 1.0f;
 
 private:
-	// Настройка сложости игры
+	// Параметры сложости игры
 	static inline DifficultySettings sDifficultySettings { 1.0f, 1.0f, 1 };
 	inline static std::map<EGameDifficulty, DifficultySettings> sDifficultySettingsMap
 	{
