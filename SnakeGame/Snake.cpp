@@ -3,6 +3,7 @@
 #include "GameSettings.h"
 #include "SpriteUtils.h"
 #include <iostream>
+
 void Snake::Initialize(const sf::Texture& texture)
 {
 	_headPosition = GameSettings::SNAKE_START_POSITION;
@@ -122,7 +123,7 @@ void Snake::UpdatePosition(const float deltaTime)
 	_movementTimer += deltaTime;
 
 	// Проверка достаточно ли времени прошло для перемещения змейки
-	if (_movementTimer < GameSettings::sTimePerCell)
+	if (_movementTimer < GameSettings::sTimePerCell / GameSettings::GetGameDifficultySettings().timeScale)
 		return;
 
 	_movementTimer = 0.f;

@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "Label.h"
+
+class Label;
 
 class UIManager
 {
@@ -15,17 +16,22 @@ public:
 
 	void ShowMainMenu();
 	void UpdateScoreLabel(const int score);
+	void UpdatePlayTimeLabel(const float time);
 	const Label* const GetScoreLabel() const { return _scoreLabel; }
 	void ShowDifficultyMenu();
 	void ShowHighScoresMenu();
 	void ShowSettingsMenu();
 	void Update();
 	void HandleInput();
+	void Draw(sf::RenderWindow& window);
 
 private:
 	UIManager();
+	void CreateHudLabels();
 	~UIManager();
+	void DeleteLabels();
 	const std::string _fontPath = R"(Resources/Fonts/Accuratist.ttf)";
 	sf::Font _mainFont;
 	Label* _scoreLabel = nullptr;
+	Label* _timeLabel = nullptr;
 };

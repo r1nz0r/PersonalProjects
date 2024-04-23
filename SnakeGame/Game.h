@@ -1,14 +1,16 @@
 ﻿#pragma once
 #include <string>
+#include <map>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Keyboard.hpp>
-
 #include "Food.h"
 #include "GameField.h"
 #include "Snake.h"
 #include "SnakeController.h"
 #include "Walls.h"
+
+enum class EGameDifficulty;
 
 enum class EGameState
 {
@@ -30,6 +32,8 @@ public:
 	void Update();
 	void Render();
 	bool IsWindowOpen() const { return _window.isOpen(); }
+	int GetScore() const { return _score; }
+	float GetPlayingTime() const { return _playTime.getElapsedTime().asSeconds(); }
 
 private:
 	const std::string _tileSetPath = R"(Resources/Textures/snake.png)";
@@ -43,8 +47,9 @@ private:
 	Wall _wall;
 	Food _food;
 	sf::Clock _printTimer; // Таймер для отслеживания времени для вывода состояния поля   
+	sf::Clock _playTime; // Счетчик времени от начала игровой сессии.
 	int _score;
-
+	EGameDifficulty _currentDifficulty;
 
 	void Initialize();
 	void DrawObject(IDrawable& object);

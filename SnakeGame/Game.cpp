@@ -1,8 +1,9 @@
-﻿#include "Game.h"
+﻿#include <random>
 #include <SFML/Window/Event.hpp>
+#include "Game.h"
 #include "Exception.h"
 #include "GameSettings.h"
-#include <random>
+#include "Label.h"
 #include "UIManager.h"
 
 Game::Game() : _gameField(_food, _wall)
@@ -35,9 +36,9 @@ void Game::Initialize()
 		sf::VideoMode(GameSettings::WINDOW_SIZE.x, GameSettings::WINDOW_SIZE.y),
 		GameSettings::GAME_TITLE
 	);
-
+	_currentDifficulty = EGameDifficulty::Insane;
 	_window.setFramerateLimit(60); //Ограничиваем FPS для избежания слишком быстрой обработки кадров.
-	_window.setKeyRepeatEnabled(false); //Отключаем повторное срабатывание сигнала при зажатии кнопки
+	_window.setKeyRepeatEnabled(false); //Отключаем повторное срабатывание сигнала при зажатии кнопки.
 
 	_gameField.Initialize();
 	_snake.Initialize(GetTileSetTexture());
@@ -47,12 +48,14 @@ void Game::Initialize()
 
 void Game::Start()
 {
-	UIManager::GetInstance().UpdateScoreLabel(_score);
 	_score = 0;
+	GameSettings::SetGameDifficultySettings(_currentDifficulty);
+	_playTime.restart();
 	_snake.Reset();
 	_food.Respawn(GenerateFoodPosition());
 	_snake.SetDirection(EDirection::None);
 	_currentGameState = EGameState::Playing;
+	UIManager::GetInstance().UpdateScoreLabel(_score);
 }
 
 void Game::Update()
@@ -61,7 +64,7 @@ void Game::Update()
 	_clock.restart();
 
 	ReadEvents();
-	
+
 
 	switch (_currentGameState)
 	{
@@ -146,6 +149,8 @@ void Game::UpdatePlayingState(const float deltaTime)
 	{
 		std::cout << e.what() << std::endl;
 	}
+
+	UIManager::GetInstance().UpdatePlayTimeLabel(GetPlayingTime());
 }
 
 void Game::RenderPlayingState()
@@ -153,14 +158,7 @@ void Game::RenderPlayingState()
 	DrawObject(_gameField);
 	DrawObject(_snake);
 	DrawObject(_food);
-
-	const Label* scoreLabel = UIManager::GetInstance().GetScoreLabel();
-
-	if (scoreLabel != nullptr)
-	{
-		Label tempLabel = *scoreLabel;
-		DrawObject(tempLabel);
-	}
+	UIManager::GetInstance().Draw(_window);
 }
 
 bool Game::CheckSnakeCollision(ECellState& collisionCellState)
@@ -232,6 +230,7 @@ void Game::OnFoodEaten()
 {
 	_score += _food.Collect();
 	_snake.Grow();
+
 
 	sf::Vector2u newFoodPosition = GenerateFoodPosition();
 	_food.Respawn(newFoodPosition);

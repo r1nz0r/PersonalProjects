@@ -1,5 +1,21 @@
 #pragma once
 #include <SFML/System.hpp>
+#include <map>
+
+struct DifficultySettings
+{
+	float timeScale;
+	float scoreScale;
+};
+
+enum class EGameDifficulty
+{
+	Beginner,
+	Easy,
+	Normal,
+	Hard,
+	Insane
+};
 
 class GameSettings
 {
@@ -14,7 +30,7 @@ public:
 	// Настройки змейки
 	static constexpr int ROTATION_ANGLE = 90;
 	inline static const int MOVE_DISTANCE = CELL_SIZE;
-	inline static float sTimePerCell = 0.15f; // Сколько времени необходимо для перемещения змейки на 1 ячейку [с].
+	inline static float sTimePerCell = 0.30f; // Сколько времени [с] необходимо для перемещения змейки на 1 ячейку при самом легком уровен сложности.
 	inline static const sf::Vector2u SNAKE_START_POSITION
 	{
 		sCellCountX / 2 * CELL_SIZE - CELL_SIZE / 2,
@@ -61,5 +77,20 @@ public:
 	{
 		GameSettings::CELL_SIZE * (GameSettings::sCellCountX - 1),
 		GameSettings::CELL_SIZE * (GameSettings::sCellCountY - 1)
+	};
+
+	static void SetGameDifficultySettings(EGameDifficulty difficulty) { sDifficultySettings = sDifficultySettingsMap[difficulty]; }
+	static const DifficultySettings& GetGameDifficultySettings() { return sDifficultySettings; }
+
+private:
+	// Настройка сложости игры
+	static inline DifficultySettings sDifficultySettings { 1.0f, 1.0f };
+	inline static std::map<EGameDifficulty, DifficultySettings> sDifficultySettingsMap
+	{
+		{ EGameDifficulty::Beginner, { 1.0f, 2.0f } },
+		{ EGameDifficulty::Easy, { 2.0f, 4.0f } },
+		{ EGameDifficulty::Normal, {3.0f, 6.0f} },
+		{ EGameDifficulty::Hard, { 4.0f, 8.0f } },
+		{ EGameDifficulty::Insane, {5.0f, 10.0f} }
 	};
 };
