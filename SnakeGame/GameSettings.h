@@ -6,6 +6,7 @@ struct DifficultySettings
 {
 	float timeScale;
 	float scoreScale;
+	uint32_t growRate;
 };
 
 enum class EGameDifficulty
@@ -84,13 +85,13 @@ public:
 
 private:
 	// Настройка сложости игры
-	static inline DifficultySettings sDifficultySettings { 1.0f, 1.0f };
+	static inline DifficultySettings sDifficultySettings { 1.0f, 1.0f, 1 };
 	inline static std::map<EGameDifficulty, DifficultySettings> sDifficultySettingsMap
 	{
-		{ EGameDifficulty::Beginner, { 1.0f, 2.0f } },
-		{ EGameDifficulty::Easy, { 2.0f, 4.0f } },
-		{ EGameDifficulty::Normal, {3.0f, 6.0f} },
-		{ EGameDifficulty::Hard, { 4.0f, 8.0f } },
-		{ EGameDifficulty::Insane, {5.0f, 10.0f} }
+		{ EGameDifficulty::Beginner, { 1.0f, 2.0f, 1 } },
+		{ EGameDifficulty::Easy, { 2.0f, 4.0f, 1 } },
+		{ EGameDifficulty::Normal, {3.0f, 6.0f, 1} },
+		{ EGameDifficulty::Hard, { 4.0f, 8.0f, 2 } },
+		{ EGameDifficulty::Insane, {5.0f, 10.0f, 2} }
 	};
 };

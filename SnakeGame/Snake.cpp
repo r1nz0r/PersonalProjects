@@ -20,7 +20,8 @@ void Snake::Initialize(const sf::Texture& texture)
 
 void Snake::Grow()
 {
-	_bodyPositions.push_back(_lastHeadPosition);
+	for (size_t i = 0; i < GameSettings::GetGameDifficultySettings().growRate; ++i)
+		_bodyPositions.push_back(_lastHeadPosition);
 }
 
 void Snake::Reset()

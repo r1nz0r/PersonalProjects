@@ -36,7 +36,7 @@ void Game::Initialize()
 		sf::VideoMode(GameSettings::WINDOW_SIZE.x, GameSettings::WINDOW_SIZE.y),
 		GameSettings::GAME_TITLE
 	);
-	_currentDifficulty = EGameDifficulty::Insane;
+	_currentDifficulty = EGameDifficulty::Normal;
 	_window.setFramerateLimit(60); //Ограничиваем FPS для избежания слишком быстрой обработки кадров.
 	_window.setKeyRepeatEnabled(false); //Отключаем повторное срабатывание сигнала при зажатии кнопки.
 
@@ -60,8 +60,8 @@ void Game::Start()
 
 void Game::Update()
 {
-	float deltaTime = _clock.getElapsedTime().asSeconds();
-	_clock.restart();
+	float deltaTime = _deltaTimeClock.getElapsedTime().asSeconds();
+	_deltaTimeClock.restart();
 
 	ReadEvents();
 
