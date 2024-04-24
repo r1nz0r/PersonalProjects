@@ -33,7 +33,9 @@ public:
 	void LoadResources();
 	void Start();
 	void Update();
+	void UpdateGameState();
 	void Render();
+	void RenderGameState();
 	bool IsWindowOpen() const { return _window.isOpen(); }
 	int GetScore() const { return _score; }
 
@@ -59,7 +61,7 @@ private:
 	void Initialize();
 	void DrawObject(IDrawable& object);
 	void UpdatePlayingState();
-	void UpdateGameField(sf::Vector2u& snakePosition);
+	void UpdateGameField(const sf::Vector2u& snakePosition);
 	void UpdatePrepareState();
 	void UpdateGameOverState();
 	void SwitchToPlayingState();
@@ -67,14 +69,14 @@ private:
 	void RenderPlayingState();
 	void RenderPrepareState();
 	void RenderGameOverState();
-	bool CheckSnakeCollision(ECellState& collisionCellState);
+	bool HandleSnakeCollision(const sf::Vector2u& snakePosition);
 	void OnGameOver();
 	void OnWindowClosed();
 	void OnKeyPressed(const sf::Keyboard::Scancode& scancode);
 	void ReadEvents();
 	void OnFoodEaten();
 	void TogglePause();
-	bool GetFreeGridPosition(sf::Vector2u& position);
 	uint32_t GetRandomUInt(const uint32_t minValue, const uint32_t maxValue);
 	sf::Vector2u GenerateFoodPosition();
+	sf::Vector2u GetRandomGridCoordinate();
 };

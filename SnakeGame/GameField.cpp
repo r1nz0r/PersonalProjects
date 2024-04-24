@@ -60,6 +60,16 @@ ECellState GameField::GetCellState(const sf::Vector2u& position) const
 	return GetCellState(positionInCell.x, positionInCell.y);
 }
 
+bool GameField::IsCellFree(const sf::Vector2u& position) const
+{
+	auto cellState = GetCellState(position);
+
+	if (cellState == ECellState::Empty)
+		return true;
+
+	return false;
+}
+
 sf::Vector2u GameField::PixelToCell(const sf::Vector2u& pixelPosition) const
 {
 	int cellX = pixelPosition.x / GameSettings::CELL_SIZE;

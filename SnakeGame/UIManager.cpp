@@ -1,4 +1,5 @@
 ﻿#include <iomanip>
+#include <sstream>
 #include "UIManager.h"
 #include "Exception.h"
 #include "GameSettings.h"
@@ -28,8 +29,9 @@ void UIManager::UpdatePlayTimeLabel(const float time)
 {
 	if (!_timeLabel)
 		return;
-
-	_timeLabel->SetText("Playing time: " + std::to_string(time).substr(0, 4) + " s");
+	std::ostringstream oss;
+	oss << std::fixed << std::setprecision(2) << time;
+	_timeLabel->SetText("Playing time: " + oss.str() + " s");
 }
 
 void UIManager::Draw(sf::RenderWindow& window)

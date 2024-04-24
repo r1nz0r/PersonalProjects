@@ -73,7 +73,18 @@ void Game::SwitchToPlayingState()
 void Game::Update()
 {
 	ReadEvents();
+	UpdateGameState();
+}
 
+void Game::Render()
+{
+	_window.clear();
+	RenderGameState();
+	_window.display();
+}
+
+void Game::UpdateGameState()
+{
 	switch (_currentGameState)
 	{
 	case EGameState::Playing:
@@ -94,14 +105,10 @@ void Game::Update()
 	default:
 		break;
 	}
-
-	Render();
 }
 
-void Game::Render()
+void Game::RenderGameState()
 {
-	_window.clear();
-
 	switch (_currentGameState)
 	{
 	case EGameState::Playing:
@@ -109,6 +116,7 @@ void Game::Render()
 		break;
 	case EGameState::Prepare:
 		RenderPrepareState();
+		break;
 	case EGameState::Menu:
 		//TODO menu logic
 		break;
@@ -121,8 +129,6 @@ void Game::Render()
 	default:
 		break;
 	}
-
-	_window.display();
 }
 
 void Game::DrawObject(IDrawable& object)
@@ -132,38 +138,23 @@ void Game::DrawObject(IDrawable& object)
 
 void Game::UpdatePlayingState()
 {
-	float deltaTime = _deltaTimeClock.getElapsedTime().asSeconds();
-	_deltaTimeClock.restart();
+	float deltaTime = _deltaTimeClock.restart().asSeconds();
 
 	UIManager::GetInstance().UpdatePlayTimeLabel(_playStopwatch.GetElapsedTimeSeconds());
+
 	_snake.Update(deltaTime);
 
-	auto snakePosition = _snake.GetHeadPosition();
+	const sf::Vector2u& snakePosition = _snake.GetHeadPosition();
 
-	ECellState collisionCellState = ECellState::Empty;
-	bool isCollisionDetected = CheckSnakeCollision(collisionCellState);
-
-	if (isCollisionDetected)
-	{
-		switch (collisionCellState)
-		{
-		case ECellState::Walls:
-		case ECellState::SnakeBody:
-			OnGameOver();
-			return;
-		case ECellState::Food:
-			OnFoodEaten();
-			break;
-		default:
-			break;
-		}
-	}
+	//Проверяем наличие коллизии. Если коллизия с стеной/змейкой то выходим из метода.
+	if (HandleSnakeCollision(snakePosition))
+		return;
 
 	//Обновляем состояние игрового поля.
 	UpdateGameField(snakePosition);
 }
 
-void Game::UpdateGameField(sf::Vector2u& snakePosition)
+void Game::UpdateGameField(const sf::Vector2u& snakePosition)
 {
 	_gameField.Clear();
 
@@ -218,18 +209,26 @@ void Game::RenderGameOverState()
 	DrawFieldAndFood();
 }
 
-bool Game::CheckSnakeCollision(ECellState& collisionCellState)
+bool Game::HandleSnakeCollision(const sf::Vector2u& snakePosition)
 {
-	const auto& currentSnakePosition = _snake.GetHeadPosition();
-	const ECellState snakeHeadPositionCellState = _gameField.GetCellState(currentSnakePosition);
+	ECellState cellState = _gameField.GetCellState(snakePosition);
 
-	if (snakeHeadPositionCellState == ECellState::Empty)
+	// Обрабатываем коллизию
+	switch (cellState)
 	{
-		return false;
+	case ECellState::Walls:
+	case ECellState::SnakeBody:
+		OnGameOver();
+		return true;
+	case ECellState::Food:
+		OnFoodEaten();
+		break;
+	default:
+		// Если надо - обрабатываем дефолт состояние
+		break;
 	}
 
-	collisionCellState = snakeHeadPositionCellState;
-	return true;
+	return false;
 }
 
 void Game::OnGameOver()
@@ -304,16 +303,6 @@ void Game::TogglePause()
 	}
 }
 
-bool Game::GetFreeGridPosition(sf::Vector2u& position)
-{
-	auto cellState = _gameField.GetCellState(position);
-
-	if (cellState == ECellState::Empty)
-		return true;
-
-	return false;
-}
-
 uint32_t Game::GetRandomUInt(const uint32_t minValue, const uint32_t maxValue)
 {
 	uint32_t randomValue = std::rand();
@@ -327,17 +316,22 @@ sf::Vector2u Game::GenerateFoodPosition()
 	sf::Vector2u newFoodPosition;
 	int tries = 0;
 
-	while (!(GetFreeGridPosition(newFoodPosition)))
+	do
 	{
-		uint32_t minCoordinateX = GetRandomUInt(GameSettings::CELL_SIZE, GameSettings::WINDOW_SIZE.x - GameSettings::CELL_SIZE);
-		minCoordinateX = minCoordinateX / GameSettings::CELL_SIZE * GameSettings::CELL_SIZE;
-		uint32_t minCoordinateY = GetRandomUInt(GameSettings::CELL_SIZE, GameSettings::WINDOW_SIZE.y - GameSettings::CELL_SIZE);
-		minCoordinateY = minCoordinateY / GameSettings::CELL_SIZE * GameSettings::CELL_SIZE;
-
-		newFoodPosition = sf::Vector2u { minCoordinateX, minCoordinateY };
+		newFoodPosition = GetRandomGridCoordinate();
 		++tries;
-	}
+	} while (!(_gameField.IsCellFree(newFoodPosition)));
 
 	std::cout << "Food was moved after " << tries << " new position searches.\n";
 	return newFoodPosition;
+}
+
+sf::Vector2u Game::GetRandomGridCoordinate()
+{
+	uint32_t minCoordinateX = GetRandomUInt(GameSettings::CELL_SIZE, GameSettings::WINDOW_SIZE.x - GameSettings::CELL_SIZE);
+	minCoordinateX = minCoordinateX / GameSettings::CELL_SIZE * GameSettings::CELL_SIZE;
+	uint32_t minCoordinateY = GetRandomUInt(GameSettings::CELL_SIZE, GameSettings::WINDOW_SIZE.y - GameSettings::CELL_SIZE);
+	minCoordinateY = minCoordinateY / GameSettings::CELL_SIZE * GameSettings::CELL_SIZE;
+
+	return sf::Vector2u { minCoordinateX, minCoordinateY };
 }
