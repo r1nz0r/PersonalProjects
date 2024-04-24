@@ -1,10 +1,10 @@
 #pragma once
 #include <SFML/System.hpp>
 
-class Timer
+class Stopwatch
 {
 public:
-    explicit Timer();
+    explicit Stopwatch();
 
     void Start();
     void Pause();

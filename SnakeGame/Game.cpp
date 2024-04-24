@@ -50,12 +50,12 @@ void Game::Start()
 {
 	_score = 0;
 	GameSettings::SetGameDifficultySettings(_currentDifficulty);
-	_playTimer.Restart();
+	_playStopwatch.Restart();
 	_snake.Reset();
 	_food.Respawn(GenerateFoodPosition());
 	_currentGameState = EGameState::Playing;
 	UIManager::GetInstance().UpdateScoreLabel(_score);
-	UIManager::GetInstance().UpdatePlayTimeLabel(_playTimer.GetElapsedTime() - GameSettings::sGameStartDelay);
+	UIManager::GetInstance().UpdatePlayTimeLabel(_playStopwatch.GetElapsedTime() - GameSettings::sGameStartDelay);
 }
 
 void Game::Update()
@@ -107,10 +107,10 @@ void Game::Render()
 	}
 
 	//Отрисовка в консоли, нужна только для дебага, в релиз версии убрать.
-	if (_printTimer.GetElapsedTime() >= GameSettings::sTimePerCell / GameSettings::GetGameDifficultySettings().timeScale)
+	if (_printStopwatch.GetElapsedTime() >= GameSettings::sTimePerCell / GameSettings::GetGameDifficultySettings().timeScale)
 	{
 		_gameField.Print();
-		_printTimer.Restart();
+		_printStopwatch.Restart();
 	}	
 
 	_window.display();
@@ -123,7 +123,7 @@ void Game::DrawObject(IDrawable& object)
 
 void Game::UpdatePlayingState(const float deltaTime)
 {
-	if (_playTimer.GetElapsedTime() >= GameSettings::sGameStartDelay)
+	if (_playStopwatch.GetElapsedTime() >= GameSettings::sGameStartDelay)
 		_snake.Update(deltaTime);
 
 	auto snakePosition = _snake.GetHeadPosition();
@@ -152,17 +152,17 @@ void Game::UpdatePlayingState(const float deltaTime)
 		std::cout << e.what() << std::endl;
 	}
 
-	UIManager::GetInstance().UpdatePlayTimeLabel(_playTimer.GetElapsedTime() - GameSettings::sGameStartDelay);
+	UIManager::GetInstance().UpdatePlayTimeLabel(_playStopwatch.GetElapsedTime() - GameSettings::sGameStartDelay);
 }
 
 void Game::UpdateGameOverState()
 {
 	Render();
 
-	if (_gameOtherTimer.GetElapsedTime() >= GameSettings::sGameEndDelay)
+	if (_gameOverStopwatch.GetElapsedTime() >= GameSettings::sGameEndDelay)
 	{
 		Start();
-		_gameOtherTimer.Pause();
+		_gameOverStopwatch.Pause();
 	}
 }
 
@@ -207,7 +207,7 @@ void Game::OnCollisionEnter(const ECellState collisionCellState)
 void Game::OnGameOver()
 {
 	_currentGameState = EGameState::GameOver;
-	_gameOtherTimer.Restart();
+	_gameOverStopwatch.Restart();
 }
 
 void Game::OnWindowClosed()
@@ -226,7 +226,7 @@ void Game::OnKeyPressed(const sf::Keyboard::Scancode& scancode)
 		TogglePause();
 	}
 
-	if (_currentGameState == EGameState::Playing && _playTimer.GetElapsedTime() >= GameSettings::sGameStartDelay)
+	if (_currentGameState == EGameState::Playing && _playStopwatch.GetElapsedTime() >= GameSettings::sGameStartDelay)
 		_snakeController.HandleInput(scancode);
 }
 
@@ -267,12 +267,12 @@ void Game::TogglePause()
 	if (_currentGameState == EGameState::Playing)
 	{
 		_currentGameState = EGameState::Pause;
-		_playTimer.Pause();
+		_playStopwatch.Pause();
 	}
 	else
 	{
 		_currentGameState = EGameState::Playing;
-		_playTimer.Start();
+		_playStopwatch.Start();
 	}
 }
 

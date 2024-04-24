@@ -9,7 +9,7 @@
 #include "Snake.h"
 #include "SnakeController.h"
 #include "Walls.h"
-#include "Timer.h"
+#include "Stopwatch.h"
 
 enum class EGameDifficulty;
 
@@ -46,9 +46,9 @@ private:
 	SnakeController _snakeController { _snake };
 	Wall _wall;
 	Food _food;
-	Timer _printTimer; // Таймер для отслеживания времени для вывода состояния поля.
-	Timer _playTimer; // Счетчик времени от начала игровой сессии.
-	Timer _gameOtherTimer; // Счетчик времени после смерти.
+	Stopwatch _printStopwatch; // Счетчик для отслеживания времени для вывода состояния поля.
+	Stopwatch _playStopwatch; // Счетчик времени от начала игровой сессии.
+	Stopwatch _gameOverStopwatch; // Счетчик времени после смерти.
 	int _score;
 	EGameDifficulty _currentDifficulty;
 

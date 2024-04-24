@@ -1,12 +1,12 @@
-#include "Timer.h"
+#include "Stopwatch.h"
 
-Timer::Timer()
+Stopwatch::Stopwatch()
     : _clock(),
     _pauseTime(0.0f),
     _bIsRunning(true)
 {}
 
-void Timer::Start()
+void Stopwatch::Start()
 {
     if (!_bIsRunning)
     {
@@ -15,7 +15,7 @@ void Timer::Start()
     }
 }
 
-void Timer::Pause()
+void Stopwatch::Pause()
 {
     if (_bIsRunning)
     {
@@ -24,20 +24,20 @@ void Timer::Pause()
     }
 }
 
-void Timer::Reset()
+void Stopwatch::Reset()
 {
     _clock.restart();
     _pauseTime = 0.0f;
     _bIsRunning = false;
 }
 
-void Timer::Restart()
+void Stopwatch::Restart()
 {
     Reset();
     Start();
 }
 
-float Timer::GetElapsedTime() const
+float Stopwatch::GetElapsedTime() const
 {
     if (!_bIsRunning)
         return _pauseTime;    
