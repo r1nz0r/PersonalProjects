@@ -8,7 +8,6 @@ public:
 
     void Start();
     void Pause();
-    //void Resume();
     void Reset();
     void Restart();
     bool IsRunning() const { return _bIsRunning; }
@@ -16,6 +15,6 @@ public:
 
 private:
     sf::Clock _clock;
-    float _runTime;
+    float _pauseTime;
     bool _bIsRunning;
 };
