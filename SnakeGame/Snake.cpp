@@ -3,6 +3,7 @@
 #include "GameSettings.h"
 #include "SpriteUtils.h"
 #include <iostream>
+
 void Snake::Initialize(const sf::Texture& texture)
 {
 	_headPosition = GameSettings::SNAKE_START_POSITION;
@@ -14,18 +15,28 @@ void Snake::Initialize(const sf::Texture& texture)
 	initializeSprite(_headSprite, texture, tileOrigin, tileScale, sf::IntRect(8, 24, tileSize.x, tileSize.y));
 	initializeSprite(_bodySprite, texture, tileOrigin, tileScale, sf::IntRect(40, 24, tileSize.x, tileSize.y));
 
+	_moveTimer = Timer(GameSettings::sTimePerCell / GameSettings::GetGameDifficultySettings().timeScale, true);
+	_moveTimer.Subscribe([this]() { UpdatePosition(); });
+	_moveTimer.Start();
+
 	_headSprite.setPosition(sf::Vector2f(_headPosition));
 }
 
 void Snake::Grow()
 {
-	_bodyPositions.push_back(_lastHeadPosition);
+	for (size_t i = 0; i < GameSettings::GetGameDifficultySettings().growRate; ++i)
+		_bodyPositions.push_back(_lastHeadPosition);
 }
 
 void Snake::Reset()
 {
+	_moveTimer.SetDuration(GameSettings::sTimePerCell / GameSettings::GetGameDifficultySettings().timeScale);
 	_headPosition = GameSettings::SNAKE_START_POSITION;
 	_bodyPositions.clear();
+
+	SetHeadPosition(GameSettings::SNAKE_START_POSITION);
+	SetDirection(EDirection::Up);
+	SetRotationFromDirection();
 }
 
 void Snake::Draw(sf::RenderWindow& window)
@@ -62,7 +73,7 @@ void Snake::Update(const float deltaTime)
 {
 	SetRotationFromDirection();
 	SetVelocity();
-	UpdatePosition(deltaTime);
+	_moveTimer.Update();
 }
 
 sf::Vector2u Snake::DirectionToVelocity(const EDirection direction)
@@ -117,15 +128,8 @@ void Snake::SetVelocity()
 	_velocity = DirectionToVelocity(_movementDirection);
 }
 
-void Snake::UpdatePosition(const float deltaTime)
+void Snake::UpdatePosition()
 {
-	_movementTimer += deltaTime;
-
-	// Проверка достаточно ли времени прошло для перемещения змейки
-	if (_movementTimer < GameSettings::sTimePerCell)
-		return;
-
-	_movementTimer = 0.f;
 	UpdateBodyPositions();
 	SetHeadPosition(_headPosition + _velocity); // Важно вызывать обновление позиции головы после обновления позиции хвоста.
 }

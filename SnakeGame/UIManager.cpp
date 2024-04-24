@@ -1,4 +1,10 @@
-﻿#include "UIManager.h"
+﻿#include <iomanip>
+#include <sstream>
+#include "UIManager.h"
+#include "Exception.h"
+#include "GameSettings.h"
+#include "Label.h"
+#include "Game.h"
 
 UIManager& UIManager::GetInstance()
 {
@@ -11,7 +17,73 @@ void UIManager::ShowMainMenu()
 
 }
 
-void UIManager::ShowCurrentScore()
+void UIManager::UpdateScoreLabel(const int score)
+{
+	if (!_scoreLabel)
+		return;
+
+	_scoreLabel->SetText("Score: " + std::to_string(score));
+}
+
+void UIManager::UpdatePlayTimeLabel(const float time)
+{
+	if (!_timeLabel)
+		return;
+	std::ostringstream oss;
+	oss << std::fixed << std::setprecision(2) << time;
+	_timeLabel->SetText("Playing time: " + oss.str() + " s");
+}
+
+void UIManager::Draw(sf::RenderWindow& window)
+{
+	if(_scoreLabel != nullptr)
+		_scoreLabel->Draw(window);
+	
+	if(_timeLabel != nullptr)
+		_timeLabel->Draw(window);
+}
+
+UIManager::UIManager()
+{
+	try
+	{
+		_mainFont.loadFromFile(_fontPath);
+	}
+	catch (const LoadResourceException& e)
+	{
+		std::cerr << "Error: " << e.what() << std::endl;
+	}
+
+	CreateHudLabels();
+}
+
+void UIManager::CreateHudLabels()
 {
 
+	uint32_t timeLabelOffset = 35;
+	sf::Vector2u timeLabelPosition
+	{
+		timeLabelOffset,
+		GameSettings::UI_HUD_OFFSET_Y / 4
+	};
+	_timeLabel = new Label { timeLabelPosition, sf::Color::White, _mainFont };
+	
+	uint32_t scoreLabelOffset = 145;
+	sf::Vector2u scoreLabelPosition
+	{
+		GameSettings::WINDOW_SIZE.x - scoreLabelOffset,
+		GameSettings::UI_HUD_OFFSET_Y / 4
+	};
+	_scoreLabel = new Label(scoreLabelPosition, sf::Color::Cyan, _mainFont);
+}
+
+UIManager::~UIManager()
+{
+	DeleteLabels();
+}
+
+void UIManager::DeleteLabels()
+{
+	delete _scoreLabel;
+	delete _timeLabel;
 }

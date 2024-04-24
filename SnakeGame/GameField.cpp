@@ -60,42 +60,14 @@ ECellState GameField::GetCellState(const sf::Vector2u& position) const
 	return GetCellState(positionInCell.x, positionInCell.y);
 }
 
-void GameField::Print() const
+bool GameField::IsCellFree(const sf::Vector2u& position) const
 {
-	system("cls");
+	auto cellState = GetCellState(position);
 
-	for (size_t y = 0; y < GameSettings::sCellCountY; ++y)
-	{
-		for (size_t x = 0; x < GameSettings::sCellCountX; ++x)
-		{
-			const ECellState state = GetCellState(x, y);
-			char symbol;
+	if (cellState == ECellState::Empty)
+		return true;
 
-			switch (state)
-			{
-			case ECellState::SnakeHead:
-				symbol = '@';
-				break;
-			case ECellState::SnakeBody:
-				symbol = 'B';
-				break;
-			case ECellState::Food:
-				symbol = 'F';
-				break;
-			case ECellState::Walls:
-				symbol = 'W';
-				break;
-			case ECellState::Empty:
-			default:
-				symbol = '.';
-				break;
-			}
-
-			std::cout << symbol << ' ';
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
+	return false;
 }
 
 sf::Vector2u GameField::PixelToCell(const sf::Vector2u& pixelPosition) const

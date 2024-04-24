@@ -1,18 +1,23 @@
 ﻿#pragma once
 #include <string>
+#include <map>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Keyboard.hpp>
-
 #include "Food.h"
 #include "GameField.h"
 #include "Snake.h"
 #include "SnakeController.h"
 #include "Walls.h"
+#include "Stopwatch.h"
+#include "Timer.h"
+
+enum class EGameDifficulty;
 
 enum class EGameState
 {
 	Playing,
+	Prepare,
 	Pause,
 	Menu,
 	GameOver,
@@ -28,36 +33,50 @@ public:
 	void LoadResources();
 	void Start();
 	void Update();
+	void UpdateGameState();
 	void Render();
+	void RenderGameState();
 	bool IsWindowOpen() const { return _window.isOpen(); }
+	int GetScore() const { return _score; }
 
 private:
 	const std::string _tileSetPath = R"(Resources/Textures/snake.png)";
 	EGameState _currentGameState = EGameState::None;
 	sf::Texture _tileSetTexture;
 	sf::RenderWindow _window;
-	sf::Clock _clock;
+	sf::Clock _deltaTimeClock; // Счетчик времени между кадрами
 	GameField _gameField;
 	Snake _snake;
 	SnakeController _snakeController { _snake };
 	Wall _wall;
 	Food _food;
-	sf::Clock _printTimer; // Таймер для отслеживания времени для вывода состояния поля   
-	int _score;
 
+	Stopwatch _playStopwatch; // Счетчик времени от начала игровой сессии.
+	Timer _startTimer; // Таймер для задержки начала игры.
+	Timer _gameOverTimer; // Таймер для задержки конца игры.
+
+	int _score;
+	EGameDifficulty _currentDifficulty;
 
 	void Initialize();
 	void DrawObject(IDrawable& object);
-	void UpdatePlayingState(const float deltaTime);
+	void UpdatePlayingState();
+	void UpdateGameField(const sf::Vector2u& snakePosition);
+	void UpdatePrepareState();
+	void UpdateGameOverState();
+	void SwitchToPlayingState();
+	void DrawFieldAndFood();
 	void RenderPlayingState();
-	bool CheckSnakeCollision(ECellState& collisionCellState);
-	void OnCollisionEnter(const ECellState collisionCellState);
+	void RenderPrepareState();
+	void RenderGameOverState();
+	bool HandleSnakeCollision(const sf::Vector2u& snakePosition);
 	void OnGameOver();
 	void OnWindowClosed();
 	void OnKeyPressed(const sf::Keyboard::Scancode& scancode);
 	void ReadEvents();
 	void OnFoodEaten();
-	bool GetFreeGridPosition(sf::Vector2u& position);
+	void TogglePause();
 	uint32_t GetRandomUInt(const uint32_t minValue, const uint32_t maxValue);
 	sf::Vector2u GenerateFoodPosition();
+	sf::Vector2u GetRandomGridCoordinate();
 };

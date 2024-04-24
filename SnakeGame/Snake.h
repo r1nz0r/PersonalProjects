@@ -2,7 +2,7 @@
 #include <vector>
 #include <SFML/Graphics/Sprite.hpp>
 #include "BaseEntity.h"
-
+#include "Timer.h"
 namespace sf
 {
 	class RenderWindow;
@@ -34,7 +34,7 @@ public:
 	void SetDirection(const EDirection newDirection);
 	const sf::Vector2u& GetVelocity() const { return _velocity; }
 	void SetVelocity();
-	void UpdatePosition(const float deltaTime);
+	void UpdatePosition();
 	void SetRotationFromDirection();
 	void Grow();
 	void Reset();
@@ -47,7 +47,7 @@ private:
 	sf::Sprite _headSprite;
 	sf::Sprite _bodySprite;
 	EDirection _movementDirection = EDirection::None;
-	float _movementTimer = 0.0f;
+	Timer _moveTimer;
 	sf::Vector2u _velocity { 0, 0 };
 	const int OPPOSITE_DIRECTION_DIFF = 2;
 	sf::Vector2u DirectionToVelocity(const EDirection direction);

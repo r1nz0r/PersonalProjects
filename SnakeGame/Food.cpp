@@ -1,8 +1,9 @@
 ﻿#include "Food.h"
+#include "GameSettings.h"
 
 int Food::Collect()
 {
-	return 1;
+	return GameSettings::GetGameDifficultySettings().scoreScale;
 }
 
 void Food::Respawn(const sf::Vector2u& position)
