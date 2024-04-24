@@ -29,7 +29,6 @@ public:
 	void SetCellState(const uint32_t x, const uint32_t y, const ECellState state);
 	void SetCellState(const sf::Vector2u& position, const ECellState state);
 	void Clear();
-	void Print() const; // Only for debug
 	virtual void Draw(sf::RenderWindow& window) override;
 private:
 	Food& _food;

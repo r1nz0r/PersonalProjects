@@ -1,4 +1,5 @@
-﻿#include "UIManager.h"
+﻿#include <iomanip>
+#include "UIManager.h"
 #include "Exception.h"
 #include "GameSettings.h"
 #include "Label.h"
@@ -28,7 +29,7 @@ void UIManager::UpdatePlayTimeLabel(const float time)
 	if (!_timeLabel)
 		return;
 
-	_timeLabel->SetText("Plying time: " + std::to_string(static_cast<int>(time)) + " s");
+	_timeLabel->SetText("Playing time: " + std::to_string(time).substr(0, 4) + " s");
 }
 
 void UIManager::Draw(sf::RenderWindow& window)
@@ -65,7 +66,7 @@ void UIManager::CreateHudLabels()
 	};
 	_timeLabel = new Label { timeLabelPosition, sf::Color::White, _mainFont };
 	
-	uint32_t scoreLabelOffset = 135;
+	uint32_t scoreLabelOffset = 145;
 	sf::Vector2u scoreLabelPosition
 	{
 		GameSettings::WINDOW_SIZE.x - scoreLabelOffset,

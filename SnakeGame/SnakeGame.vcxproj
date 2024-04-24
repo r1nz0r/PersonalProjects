@@ -145,6 +145,7 @@
     <ClCompile Include="SnakeController.cpp" />
     <ClCompile Include="SpriteUtils.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="Walls.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
@@ -243,6 +244,7 @@
     <ClInclude Include="SnakeController.h" />
     <ClInclude Include="SpriteUtils.h" />
     <ClInclude Include="Stopwatch.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Walls.h" />
   </ItemGroup>

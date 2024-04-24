@@ -10,12 +10,14 @@
 #include "SnakeController.h"
 #include "Walls.h"
 #include "Stopwatch.h"
+#include "Timer.h"
 
 enum class EGameDifficulty;
 
 enum class EGameState
 {
 	Playing,
+	Prepare,
 	Pause,
 	Menu,
 	GameOver,
@@ -46,19 +48,26 @@ private:
 	SnakeController _snakeController { _snake };
 	Wall _wall;
 	Food _food;
-	Stopwatch _printStopwatch; // Счетчик для отслеживания времени для вывода состояния поля.
+
 	Stopwatch _playStopwatch; // Счетчик времени от начала игровой сессии.
-	Stopwatch _gameOverStopwatch; // Счетчик времени после смерти.
+	Timer _startTimer; // Таймер для задержки начала игры.
+	Timer _gameOverTimer; // Таймер для задержки конца игры.
+
 	int _score;
 	EGameDifficulty _currentDifficulty;
 
 	void Initialize();
 	void DrawObject(IDrawable& object);
-	void UpdatePlayingState(const float deltaTime);
+	void UpdatePlayingState();
+	void UpdateGameField(sf::Vector2u& snakePosition);
+	void UpdatePrepareState();
 	void UpdateGameOverState();
+	void SwitchToPlayingState();
+	void DrawFieldAndFood();
 	void RenderPlayingState();
+	void RenderPrepareState();
+	void RenderGameOverState();
 	bool CheckSnakeCollision(ECellState& collisionCellState);
-	void OnCollisionEnter(const ECellState collisionCellState);
 	void OnGameOver();
 	void OnWindowClosed();
 	void OnKeyPressed(const sf::Keyboard::Scancode& scancode);

@@ -1,8 +1,11 @@
 #pragma once
-#include <SFML/System.hpp>
+#include <chrono>
 
 class Stopwatch
 {
+    using timePoint = std::chrono::steady_clock::time_point;
+    using duration = std::chrono::duration<float>;
+
 public:
     explicit Stopwatch();
 
@@ -11,10 +14,11 @@ public:
     void Reset();
     void Restart();
     bool IsRunning() const { return _bIsRunning; }
-    float GetElapsedTime() const; // Возвращает время в секундах
+    float GetElapsedTimeSeconds() const; // Возвращает время в секундах
 
-private:
-    sf::Clock _clock;
-    float _pauseTime;
+private:   
+    timePoint _startTime;
+    duration _accumulatedTime;
+    timePoint GetCurrentSystemTime() const { return std::chrono::steady_clock::now(); }
     bool _bIsRunning;
 };
