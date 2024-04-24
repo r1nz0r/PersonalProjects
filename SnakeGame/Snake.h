@@ -38,7 +38,7 @@ public:
 	void SetRotationFromDirection();
 	void Grow();
 	void Reset();
-	void Update(const float deltaTime);
+	void Update();
 
 private:
 	sf::Vector2u _headPosition;

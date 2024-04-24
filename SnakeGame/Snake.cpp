@@ -69,7 +69,7 @@ void Snake::UpdateBodyPositions()
 	_bodyPositions.front() = _headPosition; // Ставим первый (наиболее удаленный) элемент хвоста на место головы
 }
 
-void Snake::Update(const float deltaTime)
+void Snake::Update()
 {
 	SetRotationFromDirection();
 	SetVelocity();

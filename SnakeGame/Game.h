@@ -44,7 +44,6 @@ private:
 	EGameState _currentGameState = EGameState::None;
 	sf::Texture _tileSetTexture;
 	sf::RenderWindow _window;
-	sf::Clock _deltaTimeClock; // Счетчик времени между кадрами
 	GameField _gameField;
 	Snake _snake;
 	SnakeController _snakeController { _snake };

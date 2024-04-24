@@ -138,12 +138,9 @@ void Game::DrawObject(IDrawable& object)
 
 void Game::UpdatePlayingState()
 {
-	float deltaTime = _deltaTimeClock.restart().asSeconds();
-
 	UIManager::GetInstance().UpdatePlayTimeLabel(_playStopwatch.GetElapsedTimeSeconds());
 
-	_snake.Update(deltaTime);
-
+	_snake.Update();
 	const sf::Vector2u& snakePosition = _snake.GetHeadPosition();
 
 	//Проверяем наличие коллизии. Если коллизия с стеной/змейкой то выходим из метода.
@@ -260,6 +257,7 @@ void Game::OnKeyPressed(const sf::Keyboard::Scancode& scancode)
 void Game::ReadEvents()
 {
 	sf::Event event;
+
 	while (_window.pollEvent(event))
 	{
 		switch (event.type)
@@ -281,7 +279,6 @@ void Game::OnFoodEaten()
 {
 	_score += _food.Collect();
 	_snake.Grow();
-
 
 	sf::Vector2u newFoodPosition = GenerateFoodPosition();
 	_food.Respawn(newFoodPosition);
