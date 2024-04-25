@@ -188,30 +188,28 @@ void Game::UpdateGameOverState()
 	_gameOverTimer.Update();
 }
 
-void Game::DrawFieldAndFood()
+void Game::DrawAllFieldObjects()
 {
 	DrawObject(_gameField);
 	DrawObject(_food);
+	DrawObject(_snake);
 }
 
 void Game::RenderPlayingState()
 {
-	DrawFieldAndFood();
-	DrawObject(_snake);
+	DrawAllFieldObjects();
 	UIManager::GetInstance().DrawPlayingHud(_window);
 }
 
 void Game::RenderPrepareState()
 {
-	DrawFieldAndFood();
-	DrawObject(_snake);
+	DrawAllFieldObjects();
 	UIManager::GetInstance().DrawPrepareHud(_window);
 }
 
 void Game::RenderPauseState()
 {
-	DrawFieldAndFood();
-	DrawObject(_snake);
+	DrawAllFieldObjects();
 	UIManager::GetInstance().DrawPauseHud(_window);
 }
 

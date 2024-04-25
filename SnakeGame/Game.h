@@ -64,7 +64,7 @@ private:
 	void UpdatePrepareState();
 	void UpdateGameOverState();
 	void SwitchToPlayingState();
-	void DrawFieldAndFood();
+	void DrawAllFieldObjects();
 	void RenderPlayingState();
 	void RenderPrepareState();
 	void RenderPauseState();
