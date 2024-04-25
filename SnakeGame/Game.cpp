@@ -59,19 +59,19 @@ void Game::Start()
 	_score = 0;
 	_snake.Reset();
 	_food.Respawn(GenerateFoodPosition());
+	_playStopwatch.Reset();
 	_startTimer.Start();
 }
 
 void Game::SwitchToPlayingState()
 {
-	UIManager::GetInstance().UpdateScoreLabel(0);
-	UIManager::GetInstance().UpdatePlayTimeLabel(0.0f);
+	UIManager::GetInstance().UpdateScoreLabel(_score);
 	_currentGameState = EGameState::Playing;
 
 	// Напрямую сбрасываем таймеры для корректной работы в случае когда игрок начать игру раньше
 	_startTimer.Reset(); 
 	_gameOverTimer.Reset();
-	_playStopwatch.Restart();
+	_playStopwatch.Start();
 }
 
 void Game::Update()
@@ -210,7 +210,8 @@ void Game::RenderPrepareState()
 
 void Game::RenderPauseState()
 {
-	RenderPlayingState();
+	DrawFieldAndFood();
+	DrawObject(_snake);
 	UIManager::GetInstance().DrawPauseHud(_window);
 }
 
@@ -304,19 +305,29 @@ void Game::TogglePause()
 	switch (_currentGameState)
 	{
 		case EGameState::Playing:
-			_currentGameState = EGameState::Pause;
-			_playStopwatch.Pause();
+			Pause();
 			break;
 		case EGameState::Prepare:
 			SwitchToPlayingState();
 			break;
 		case EGameState::Pause:
-			_currentGameState = EGameState::Playing;
-			_playStopwatch.Start();
+			UnPause();
 			break;
 		default:
 			break;
 	}
+}
+
+void Game::UnPause()
+{
+	_currentGameState = EGameState::Prepare;
+	_startTimer.Start();
+}
+
+void Game::Pause()
+{
+	_currentGameState = EGameState::Pause;
+	_playStopwatch.Pause();
 }
 
 uint32_t Game::GetRandomUInt(const uint32_t minValue, const uint32_t maxValue)

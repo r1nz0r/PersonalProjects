@@ -76,6 +76,8 @@ private:
 	void ReadEvents();
 	void OnFoodEaten();
 	void TogglePause();
+	void UnPause();
+	void Pause();
 	uint32_t GetRandomUInt(const uint32_t minValue, const uint32_t maxValue);
 	sf::Vector2u GenerateFoodPosition();
 	sf::Vector2u GetRandomGridCoordinate();

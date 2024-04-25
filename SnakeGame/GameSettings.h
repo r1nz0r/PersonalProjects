@@ -25,8 +25,8 @@ public:
 	// Настройки игрового поля
 	inline static const sf::Vector2f TILE_SCALE { 4.0f, 4.0f };
 	inline static const sf::Vector2i TILE_SIZE { 8, 8 };
-	inline static uint32_t sCellCountX = 20;
-	inline static uint32_t sCellCountY = 20;
+	static constexpr uint32_t sCellCountX = 25;
+	static constexpr uint32_t sCellCountY = 20;
 	inline static const int CELL_SIZE = TILE_SIZE.x * static_cast<int>(TILE_SCALE.x);
 
 	// Настройки змейки
@@ -52,8 +52,8 @@ public:
 	inline static const sf::Color sPrepareBackgroundColor { 250, 250, 80, 50 };
 
 	// Настройки еды
-	static const sf::Vector2f FOOD_SIZE;
-	inline static int sPointsForFood = 2;
+	inline static const sf::Vector2f FOOD_SIZE;
+	static const int POINTS_FOR_FOOD = 2;
 
 	// Настройки стены
 	static const sf::Vector2f WALL_SIZE;

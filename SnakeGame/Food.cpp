@@ -3,7 +3,7 @@
 
 int Food::Collect()
 {
-	return GameSettings::GetGameDifficultySettings().scoreScale;
+	return GameSettings::GetGameDifficultySettings().scoreScale * GameSettings::POINTS_FOR_FOOD;
 }
 
 void Food::Respawn(const sf::Vector2u& position)
