@@ -67,6 +67,7 @@ private:
 	void DrawFieldAndFood();
 	void RenderPlayingState();
 	void RenderPrepareState();
+	void RenderPauseState();
 	void RenderGameOverState();
 	bool HandleSnakeCollision(const sf::Vector2u& snakePosition);
 	void OnGameOver();

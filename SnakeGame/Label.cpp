@@ -22,6 +22,7 @@ void Label::Initialize(const std::string& text, const sf::Vector2u& position)
 	_text.setString(text);
 	_text.setPosition(sf::Vector2f(position));
 	_text.setFillColor(_color);
+	
 }
 
 void Label::Draw(sf::RenderWindow & window)

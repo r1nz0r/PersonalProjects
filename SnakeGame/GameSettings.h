@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 #include <map>
 
 struct DifficultySettings
@@ -46,6 +47,9 @@ public:
 		sCellCountX * CELL_SIZE,
 		sCellCountY * CELL_SIZE + UI_HUD_OFFSET_Y
 	};
+	inline static const sf::Color sPauseBackgroundColor { 10, 20, 40, 230 };
+	inline static const sf::Color sGameOverBackgroundColor { 80, 10, 40, 230 };
+	inline static const sf::Color sPrepareBackgroundColor { 250, 250, 80, 50 };
 
 	// Настройки еды
 	static const sf::Vector2f FOOD_SIZE;
@@ -83,8 +87,8 @@ public:
 	// Настройка игрового процесса
 	static void SetGameDifficultySettings(EGameDifficulty difficulty) { sDifficultySettings = sDifficultySettingsMap[difficulty]; }
 	static const DifficultySettings& GetGameDifficultySettings() { return sDifficultySettings; }
-	static constexpr float sGameStartDelay = 1.0f;
-	static constexpr float sGameEndDelay = 1.0f;
+	static constexpr float sGameStartDelay = 2.0f;
+	static constexpr float sGameEndDelay = 2.0f;
 
 private:
 	// Параметры сложости игры

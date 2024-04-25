@@ -67,6 +67,10 @@ void Game::SwitchToPlayingState()
 	UIManager::GetInstance().UpdateScoreLabel(0);
 	UIManager::GetInstance().UpdatePlayTimeLabel(0.0f);
 	_currentGameState = EGameState::Playing;
+
+	// Напрямую сбрасываем таймеры для корректной работы в случае когда игрок начать игру раньше
+	_startTimer.Reset(); 
+	_gameOverTimer.Reset();
 	_playStopwatch.Restart();
 }
 
@@ -121,7 +125,7 @@ void Game::RenderGameState()
 		//TODO menu logic
 		break;
 	case EGameState::Pause:
-		RenderPlayingState();
+		RenderPauseState();
 		break;
 	case EGameState::GameOver:
 		RenderGameOverState();
@@ -174,11 +178,13 @@ void Game::UpdateGameField(const sf::Vector2u& snakePosition)
 void Game::UpdatePrepareState()
 {
 	_gameField.Clear();
+	UIManager::GetInstance().UpdatePrepareLabel(_startTimer.GetRemainingSeconds());
 	_startTimer.Update();
 }
 
 void Game::UpdateGameOverState()
 {
+	UIManager::GetInstance().UpdateGameOverLabel(_score);
 	_gameOverTimer.Update();
 }
 
@@ -192,18 +198,25 @@ void Game::RenderPlayingState()
 {
 	DrawFieldAndFood();
 	DrawObject(_snake);
-	UIManager::GetInstance().Draw(_window);
+	UIManager::GetInstance().DrawPlayingHud(_window);
 }
 
 void Game::RenderPrepareState()
 {
 	DrawFieldAndFood();
 	DrawObject(_snake);
+	UIManager::GetInstance().DrawPrepareHud(_window);
+}
+
+void Game::RenderPauseState()
+{
+	RenderPlayingState();
+	UIManager::GetInstance().DrawPauseHud(_window);
 }
 
 void Game::RenderGameOverState()
 {
-	DrawFieldAndFood();
+	UIManager::GetInstance().DrawGameOverHud(_window);
 }
 
 bool Game::HandleSnakeCollision(const sf::Vector2u& snakePosition)
@@ -288,15 +301,21 @@ void Game::OnFoodEaten()
 
 void Game::TogglePause()
 {
-	if (_currentGameState == EGameState::Playing)
+	switch (_currentGameState)
 	{
-		_currentGameState = EGameState::Pause;
-		_playStopwatch.Pause();
-	}
-	else
-	{
-		_currentGameState = EGameState::Playing;
-		_playStopwatch.Start();
+		case EGameState::Playing:
+			_currentGameState = EGameState::Pause;
+			_playStopwatch.Pause();
+			break;
+		case EGameState::Prepare:
+			SwitchToPlayingState();
+			break;
+		case EGameState::Pause:
+			_currentGameState = EGameState::Playing;
+			_playStopwatch.Start();
+			break;
+		default:
+			break;
 	}
 }
 
