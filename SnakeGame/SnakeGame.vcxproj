@@ -141,6 +141,7 @@
     <ClCompile Include="GameMain.cpp" />
     <ClCompile Include="IDrawable.cpp" />
     <ClCompile Include="Label.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="SnakeController.cpp" />
     <ClCompile Include="SpriteUtils.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="IDrawable.h" />
     <ClInclude Include="Label.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="Snake.h" />
     <ClInclude Include="SnakeController.h" />
     <ClInclude Include="SpriteUtils.h" />
