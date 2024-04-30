@@ -28,7 +28,8 @@ void Timer::Update()
 
 float Timer::GetRemainingSeconds() const
 {
-	return _duration - GetElapsedTimeSeconds();
+	float remainingSeconds = _duration - GetElapsedTimeSeconds();
+	return remainingSeconds > 0.0f ? remainingSeconds : 0.0f;
 }
 
 void Timer::OnTimerFired()
