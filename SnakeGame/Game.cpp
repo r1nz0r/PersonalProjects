@@ -44,7 +44,8 @@ void Game::Initialize()
 	_gameOverTimer.Subscribe([this]() { Start(); });
 
 	_startTimer.SetDuration(GameSettings::sGameStartDelay);
-	_startTimer.Subscribe([this]() { SwitchToPlayingState(); });
+	//_startTimer.Subscribe([this]() { SwitchToPlayingState(); });
+	_startTimer.Subscribe(std::bind(&Game::SwitchToPlayingState, this));
 
 	_gameField.Initialize();
 	_snake.Initialize(GetTileSetTexture());
