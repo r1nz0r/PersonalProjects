@@ -1,10 +1,13 @@
 #include <iostream>
-#include <string>
+#include <thread>
 #include "Application.h"
+#include "Stopwatch.h"
 
 int main()
 {
-    Application& application = Application::GetInstance();
-    application.Run();
+    Application& app = Application::GetInstance();
+    app.Run();
     return 0;
 }
+
+

@@ -32,7 +32,7 @@ public:
 	// Настройки змейки
 	static constexpr int ROTATION_ANGLE = 90;
 	inline static const int MOVE_DISTANCE = CELL_SIZE;
-	inline static float sTimePerCell = 0.35f; // Сколько времени [с] необходимо для перемещения змейки на 1 ячейку при самом легком уровен сложности.
+	inline static float sTimePerCell = 0.33f; // Сколько времени [с] необходимо для перемещения змейки на 1 ячейку при самом легком уровен сложности.
 	inline static const sf::Vector2u SNAKE_START_POSITION
 	{
 		sCellCountX / 2 * CELL_SIZE - CELL_SIZE / 2,

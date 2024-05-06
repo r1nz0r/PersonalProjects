@@ -3,7 +3,7 @@
 #include "Game.h"
 #include "Exception.h"
 #include "GameSettings.h"
-#include "Label.h"
+#include "Text.h"
 #include "UIManager.h"
 
 Game::Game() : _gameField(_food, _wall)
@@ -37,14 +37,14 @@ void Game::Initialize()
 		GameSettings::GAME_TITLE
 	);
 	_currentDifficulty = EGameDifficulty::Normal;
+	GameSettings::SetGameDifficultySettings(_currentDifficulty);
 	_window.setFramerateLimit(60); //Ограничиваем FPS для избежания слишком быстрой обработки кадров.
 	_window.setKeyRepeatEnabled(false); //Отключаем повторное срабатывание сигнала при зажатии кнопки.
 
 	_gameOverTimer.SetDuration(GameSettings::sGameEndDelay);
-	_gameOverTimer.Subscribe([this]() { Start(); });
+	_gameOverTimer.Subscribe(std::bind(&Game::Start, this));
 
 	_startTimer.SetDuration(GameSettings::sGameStartDelay);
-	//_startTimer.Subscribe([this]() { SwitchToPlayingState(); });
 	_startTimer.Subscribe(std::bind(&Game::SwitchToPlayingState, this));
 
 	_gameField.Initialize();
@@ -66,7 +66,7 @@ void Game::Start()
 
 void Game::SwitchToPlayingState()
 {
-	UIManager::GetInstance().UpdateScoreLabel(_score);
+	UIManager::GetInstance().UpdateScoreText(_score);
 	_currentGameState = EGameState::Playing;
 
 	// Напрямую сбрасываем таймеры для корректной работы в случае когда игрок начать игру раньше
@@ -143,7 +143,7 @@ void Game::DrawObject(IDrawable& object)
 
 void Game::UpdatePlayingState()
 {
-	UIManager::GetInstance().UpdatePlayTimeLabel(_playStopwatch.GetElapsedTimeSeconds());
+	UIManager::GetInstance().UpdatePlayTimeText(_playStopwatch.GetElapsedTimeSeconds());
 
 	_snake.Update();
 	const sf::Vector2u& snakePosition = _snake.GetHeadPosition();
@@ -179,7 +179,7 @@ void Game::UpdateGameField(const sf::Vector2u& snakePosition)
 void Game::UpdatePrepareState()
 {
 	_gameField.Clear();
-	UIManager::GetInstance().UpdatePrepareLabel(_startTimer.GetRemainingSeconds());
+	UIManager::GetInstance().UpdatePrepareText(_startTimer.GetRemainingSeconds());
 	_startTimer.Update();
 }
 
@@ -296,7 +296,7 @@ void Game::OnFoodEaten()
 	sf::Vector2u newFoodPosition = GenerateFoodPosition();
 	_food.Respawn(newFoodPosition);
 
-	UIManager::GetInstance().UpdateScoreLabel(_score);
+	UIManager::GetInstance().UpdateScoreText(_score);
 }
 
 void Game::TogglePause()
