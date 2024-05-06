@@ -3,8 +3,9 @@
 #include "UIManager.h"
 #include "Exception.h"
 #include "GameSettings.h"
-#include "Label.h"
+#include "Time.h"
 #include "Game.h"
+#include "TextBlock.h"
 
 UIManager& UIManager::GetInstance()
 {
@@ -17,93 +18,89 @@ void UIManager::ShowMainMenu()
 
 }
 
-void UIManager::UpdateScoreLabel(const int score)
+void UIManager::UpdateScoreText(const int score)
 {
-	if (!_scoreLabel)
+	if (!_scoreText)
 		return;
 
-	_scoreLabel->SetText("Score: " + std::to_string(score));
+	_scoreText->setString("Score: " + std::to_string(score));
 }
 
-void UIManager::UpdatePlayTimeLabel(const float time)
+void UIManager::UpdatePlayTimeText(const float time)
 {
-	if (!_timeLabel)
+	if (!_timeText)
 		return;
 
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(2) << time;
-	_timeLabel->SetText("Playing time: " + oss.str() + " s");
+	_timeText->setString("Playing time: " + oss.str() + " s");
 
-	uint32_t timeLabelOffsetX = 35;
-	sf::Vector2u timeLabelPosition
+	float timeLabelOffsetX = 35.0f;
+	sf::Vector2f timeLabelPosition
 	{
 		timeLabelOffsetX,
-		GameSettings::UI_HUD_OFFSET_Y / 4
+		GameSettings::UI_HUD_OFFSET_Y / 4.0f
 	};
-	_timeLabel->SetPosition(timeLabelPosition);
+	_timeText->setPosition(timeLabelPosition);
 }
 
-void UIManager::UpdatePrepareLabel(const float time)
+void UIManager::UpdatePrepareText(const float time)
 {
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(2) << time;
-	_timeLabel->SetText("Get ready! " + oss.str());
+	_timeText->setString("Get ready! " + oss.str());
 	
-	sf::Vector2u timeLabelPosition
+	sf::Vector2f timeLabelPosition
 	{
-		(GameSettings::WINDOW_SIZE.x - static_cast<uint32_t>(_timeLabel->GetLabelWidth())) / 2,
-		GameSettings::WINDOW_SIZE.y / 3
+		(GameSettings::WINDOW_SIZE.x - _timeText->getLocalBounds().width) / 2.0f,
+		GameSettings::WINDOW_SIZE.y / 3.0f
 	};
-	_timeLabel->SetPosition(timeLabelPosition);
+	_timeText->setPosition(timeLabelPosition);
 }
 
 void UIManager::UpdateGameOverLabel(const int score)
 {
-	if (!_gameOverLabel)
+	if (!_gameOverBlock)
 		return;
 
-	std::string gameOverText = "Game Over!\nYour score is - " + std::to_string(score) + "\nHigh score is - 0000";
-	_gameOverLabel->SetText(gameOverText);
-
-	sf::Vector2u gameOverLabelPosition
-	{
-		(GameSettings::WINDOW_SIZE.x - static_cast<uint32_t>(_gameOverLabel->GetLabelWidth())) / 2,
-		(GameSettings::WINDOW_SIZE.y - static_cast<uint32_t>(_gameOverLabel->GetLabelHeight())) / 2
-	};
-	_gameOverLabel->SetPosition(gameOverLabelPosition);
+	_gameOverBlock->Clear();
+	_gameOverBlock->AddText(std::string("Game Over!"), _mainFont);
+	_gameOverBlock->AddText(std::string("Your score is - " + std::to_string(score)), _mainFont);
+	_gameOverBlock->AddText(std::string("High score is - 0000"), _mainFont);
+	_gameOverBlock->AlignTexts();
 }
 
 void UIManager::DrawPlayingHud(sf::RenderWindow& window)
 {
-	if (_scoreLabel != nullptr)
-		_scoreLabel->Draw(window);
+	if (_scoreText != nullptr)
+		_scoreText->Draw(window);
 
-	if (_timeLabel != nullptr)
-		_timeLabel->Draw(window);
+	if (_timeText != nullptr)
+		_timeText->Draw(window);
 }
 
 void UIManager::DrawPrepareHud(sf::RenderWindow& window)
 {
 	DrawBackground(window, GameSettings::sPrepareBackgroundColor);
 
-	if (_timeLabel != nullptr)
-		_timeLabel->Draw(window);
+	if (_timeText != nullptr)
+		_timeText->Draw(window);
 }
 
 void UIManager::DrawPauseHud(sf::RenderWindow& window)
 {
 	DrawBackground(window, GameSettings::sPauseBackgroundColor);
 
-	if (_pauseLabel != nullptr)
-		_pauseLabel->Draw(window);
+	if (_pauseText != nullptr)
+		_pauseText->Draw(window);
 }
 
 void UIManager::DrawGameOverHud(sf::RenderWindow& window)
 {
 	DrawBackground(window, GameSettings::sGameOverBackgroundColor);
 
-	if (_gameOverLabel != nullptr)
-		_gameOverLabel->Draw(window);
+	if (_gameOverBlock != nullptr)
+		_gameOverBlock->Draw(window);
 }
 
 void UIManager::DrawBackground(sf::RenderWindow& window, const sf::Color& color)
@@ -131,24 +128,30 @@ UIManager::UIManager()
 
 void UIManager::CreateHudLabels()
 {
-	_timeLabel = new Label { {0,0 }, sf::Color::White, _mainFont };
-	_gameOverLabel = new Label({ 0,0 }, sf::Color::White, _mainFont, "", 40u);
+	_timeText = new Text {"", _mainFont, Text::HorizontalAlignment::Start, sf::Color::White};
+	_gameOverBlock = new TextBlock
+	{
+		sf::Vector2f(GameSettings::WINDOW_SIZE.x / 2, GameSettings::WINDOW_SIZE.x / 2),
+		10 
+	};
 
-	uint32_t scoreLabelOffsetX = 145;
-	sf::Vector2u scoreLabelPosition
+	float scoreLabelOffsetX = 145.0f;
+	sf::Vector2f scoreTextPosition
 	{
 		GameSettings::WINDOW_SIZE.x - scoreLabelOffsetX,
-		GameSettings::UI_HUD_OFFSET_Y / 4
+		GameSettings::UI_HUD_OFFSET_Y / 4.0
 	};
-	_scoreLabel = new Label(scoreLabelPosition, sf::Color::Cyan, _mainFont);
 
-	_pauseLabel = new Label({ 0,0 }, sf::Color::Red, _mainFont, "PAUSE", 50u);
-	sf::Vector2u pauseLabelPosition
+	_scoreText = new Text { "", _mainFont, Text::HorizontalAlignment::Start, sf::Color::Cyan };
+	_scoreText->setPosition(scoreTextPosition);
+
+	_pauseText = new Text { "PAUSE", _mainFont, Text::HorizontalAlignment::Center, sf::Color::Red, 50u };
+	sf::Vector2f pauseLabelPosition
 	{
-		(GameSettings::WINDOW_SIZE.x - static_cast<uint32_t>(_pauseLabel->GetLabelWidth())) / 2,
-		(GameSettings::WINDOW_SIZE.y - static_cast<uint32_t>(_pauseLabel->GetLabelHeight())) / 2
+		(GameSettings::WINDOW_SIZE.x - _pauseText->getLocalBounds().width) / 2.0f,
+		(GameSettings::WINDOW_SIZE.y - _pauseText->getLocalBounds().height) / 2.0f
 	};
-	_pauseLabel->SetPosition(pauseLabelPosition);
+	_pauseText->setPosition(pauseLabelPosition);
 }
 
 UIManager::~UIManager()
@@ -158,8 +161,8 @@ UIManager::~UIManager()
 
 void UIManager::DeleteLabels()
 {
-	delete _scoreLabel;
-	delete _timeLabel;
-	delete _pauseLabel;
-	delete _gameOverLabel;
+	delete _scoreText;
+	delete _timeText;
+	delete _pauseText;
+	delete _gameOverBlock;
 }

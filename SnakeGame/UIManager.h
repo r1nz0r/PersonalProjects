@@ -2,7 +2,8 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
-class Label;
+class TextBlock;
+class Text;
 
 class UIManager
 {
@@ -15,11 +16,11 @@ public:
 	UIManager& operator=(UIManager&& other) noexcept = delete;
 
 	void ShowMainMenu();
-	void UpdateScoreLabel(const int score);
-	void UpdatePlayTimeLabel(const float time);
-	void UpdatePrepareLabel(const float time);
+	void UpdateScoreText(const int score);
+	void UpdatePlayTimeText(const float time);
+	void UpdatePrepareText(const float time);
 	void UpdateGameOverLabel(const int score);
-	const Label* const GetScoreLabel() const { return _scoreLabel; }
+	const Text* const GetScoreText() const { return _scoreText; }
 	void ShowDifficultyMenu();
 	void ShowHighScoresMenu();
 	void ShowSettingsMenu();
@@ -38,9 +39,9 @@ private:
 	void DeleteLabels();
 	const std::string _fontPath = R"(Resources/Fonts/Accuratist.ttf)";
 	sf::Font _mainFont;
-	Label* _scoreLabel = nullptr;
-	Label* _timeLabel = nullptr;
-	Label* _pauseLabel = nullptr;
-	Label* _gameOverLabel = nullptr;
+	Text* _scoreText = nullptr;
+	Text* _timeText = nullptr;
+	Text* _pauseText = nullptr;
+	TextBlock* _gameOverBlock = nullptr;
 	sf::RectangleShape _background;
 };
