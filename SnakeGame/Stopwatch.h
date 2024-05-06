@@ -3,7 +3,7 @@
 
 class Stopwatch
 {
-    using timePoint = std::chrono::steady_clock::time_point;
+    using timePoint = std::chrono::high_resolution_clock::time_point;
     using duration = std::chrono::duration<float>;
 
 public:
@@ -19,6 +19,6 @@ public:
 private:   
     timePoint _startTime;
     duration _accumulatedTime;
-    timePoint GetCurrentSystemTime() const { return std::chrono::steady_clock::now(); }
+    timePoint GetCurrentSystemTime() const { return std::chrono::high_resolution_clock::now(); }
     bool _bIsRunning;
 };
