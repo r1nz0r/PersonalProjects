@@ -27,6 +27,8 @@ enum class EGameState
 class Game
 {
 public:
+	using RecordsTable = std::unordered_map<std::string, int>;
+
 	Game();
 	~Game() = default;
 	const sf::Texture& GetTileSetTexture() const { return _tileSetTexture; }
@@ -54,8 +56,9 @@ private:
 	Timer _startTimer; // Таймер для задержки начала игры.
 	Timer _gameOverTimer; // Таймер для задержки конца игры.
 
-	int _score;
 	EGameDifficulty _currentDifficulty;
+	int _score;
+	RecordsTable _recordsTable;
 
 	void Initialize();
 	void DrawObject(IDrawable& object);

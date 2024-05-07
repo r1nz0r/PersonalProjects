@@ -4,13 +4,8 @@ Timer::Timer(float duration, bool bIsLooping) :
 	Stopwatch(),
 	_duration(duration),
 	_bIsLooping(bIsLooping),
-	_callBacks()
+	onTimerFired()
 {}
-
-void Timer::Subscribe(std::function<void()> callback)
-{
-	_callBacks.push_back(callback);
-}
 
 void Timer::Update()
 {
@@ -18,7 +13,7 @@ void Timer::Update()
 
 	if (IsRunning() && elapsedSeconds >= _duration)
 	{
-		OnTimerFired();
+		onTimerFired.Notify();
 		Reset();
 
 		if (_bIsLooping)
@@ -30,12 +25,4 @@ float Timer::GetRemainingSeconds() const
 {
 	float remainingSeconds = _duration - GetElapsedTimeSeconds();
 	return remainingSeconds > 0.0f ? remainingSeconds : 0.0f;
-}
-
-void Timer::OnTimerFired()
-{
-	for (const auto& callback : _callBacks)
-	{
-		callback();
-	}
 }

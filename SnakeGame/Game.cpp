@@ -6,7 +6,7 @@
 #include "Text.h"
 #include "UIManager.h"
 
-Game::Game() : _gameField(_food, _wall)
+Game::Game() : _gameField(_food, _wall), _score(0), _recordsTable()
 {
 	try
 	{
@@ -42,10 +42,10 @@ void Game::Initialize()
 	_window.setKeyRepeatEnabled(false); //Отключаем повторное срабатывание сигнала при зажатии кнопки.
 
 	_gameOverTimer.SetDuration(GameSettings::sGameEndDelay);
-	_gameOverTimer.Subscribe(std::bind(&Game::Start, this));
+	_gameOverTimer.onTimerFired += std::bind(&Game::Start, this);
 
 	_startTimer.SetDuration(GameSettings::sGameStartDelay);
-	_startTimer.Subscribe(std::bind(&Game::SwitchToPlayingState, this));
+	_startTimer.onTimerFired += std::bind(&Game::SwitchToPlayingState, this);
 
 	_gameField.Initialize();
 	_snake.Initialize(GetTileSetTexture());
@@ -185,7 +185,8 @@ void Game::UpdatePrepareState()
 
 void Game::UpdateGameOverState()
 {
-	UIManager::GetInstance().UpdateGameOverLabel(_score);
+	_recordsTable["You"] = std::max(_score, _recordsTable["You"]);
+	UIManager::GetInstance().UpdateGameOverLabel(_score, _recordsTable["You"]);
 	_gameOverTimer.Update();
 }
 
