@@ -19,7 +19,7 @@ public:
 	void UpdateScoreText(const int score);
 	void UpdatePlayTimeText(const float time);
 	void UpdatePrepareText(const float time);
-	void UpdateGameOverLabel(const int score);
+	void UpdateGameOverLabel(const int score, const int highScore);
 	const Text* const GetScoreText() const { return _scoreText; }
 	void ShowDifficultyMenu();
 	void ShowHighScoresMenu();

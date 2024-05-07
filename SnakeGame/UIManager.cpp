@@ -58,7 +58,7 @@ void UIManager::UpdatePrepareText(const float time)
 	_timeText->setPosition(timeLabelPosition);
 }
 
-void UIManager::UpdateGameOverLabel(const int score)
+void UIManager::UpdateGameOverLabel(const int score, const int highScore)
 {
 	if (!_gameOverBlock)
 		return;
@@ -66,7 +66,7 @@ void UIManager::UpdateGameOverLabel(const int score)
 	_gameOverBlock->Clear();
 	_gameOverBlock->AddText(std::string("Game Over!"), _mainFont);
 	_gameOverBlock->AddText(std::string("Your score is - " + std::to_string(score)), _mainFont);
-	_gameOverBlock->AddText(std::string("High score is - 0000"), _mainFont);
+	_gameOverBlock->AddText(std::string("High score is - " + std::to_string(highScore)), _mainFont);
 	_gameOverBlock->AlignTexts();
 }
 
