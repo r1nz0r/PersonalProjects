@@ -10,9 +10,9 @@ class Text : public sf::Text, public IDrawable
 public:
     enum class HorizontalAlignment
     {
-        Start,
+        Left,
         Center,
-        End
+        Right
     };
 
     Text();
@@ -28,6 +28,7 @@ public:
     inline void SetAlignment(HorizontalAlignment alignment);
     inline HorizontalAlignment GetAlignment() const { return _alignment; }
     virtual void Draw(sf::RenderWindow& window) override;
+    void AlignHorizontally(const float posX);
     void AlignHorizontally(const sf::FloatRect& container);
 
 private:

@@ -23,21 +23,40 @@ void Text::Draw(sf::RenderWindow& window)
     window.draw(*this);
 }
 
-void Text::AlignHorizontally(const sf::FloatRect& container)
+void Text::AlignHorizontally(const float posX)
 {
-    sf::FloatRect textBounds = getLocalBounds();
     float x = 0;
 
     switch (_alignment)
     {
-    case HorizontalAlignment::Start:
+    case HorizontalAlignment::Left:
+        x = posX - getLocalBounds().width;
+        break;
+    case HorizontalAlignment::Center:
+        x = posX - getLocalBounds().width / 2;
+        break;
+    case HorizontalAlignment::Right:
+        x = posX;
+        break;
+    }
+
+    setPosition(x, getPosition().y);
+}
+
+void Text::AlignHorizontally(const sf::FloatRect& container)
+{
+    float x = 0;
+
+    switch (_alignment)
+    {
+    case HorizontalAlignment::Left:
         x = container.left;
         break;
     case HorizontalAlignment::Center:
-        x = container.left + (container.width - textBounds.width) / 2;
+        x = container.left + (container.width - getLocalBounds().width) / 2;
         break;
-    case HorizontalAlignment::End:
-        x = container.left + container.width - textBounds.width;
+    case HorizontalAlignment::Right:
+        x = container.left + container.width - getLocalBounds().width;
         break;
     }
 

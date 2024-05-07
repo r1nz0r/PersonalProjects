@@ -128,7 +128,7 @@ UIManager::UIManager()
 
 void UIManager::CreateHudLabels()
 {
-	_timeText = new Text {"", _mainFont, Text::HorizontalAlignment::Start, sf::Color::White};
+	_timeText = new Text {"", _mainFont, Text::HorizontalAlignment::Left, sf::Color::White};
 	_gameOverBlock = new TextBlock
 	{
 		sf::Vector2f(GameSettings::WINDOW_SIZE.x / 2, GameSettings::WINDOW_SIZE.x / 2),
@@ -142,7 +142,7 @@ void UIManager::CreateHudLabels()
 		GameSettings::UI_HUD_OFFSET_Y / 4.0
 	};
 
-	_scoreText = new Text { "", _mainFont, Text::HorizontalAlignment::Start, sf::Color::Cyan };
+	_scoreText = new Text { "", _mainFont, Text::HorizontalAlignment::Left, sf::Color::Cyan };
 	_scoreText->setPosition(scoreTextPosition);
 
 	_pauseText = new Text { "PAUSE", _mainFont, Text::HorizontalAlignment::Center, sf::Color::Red, 50u };
