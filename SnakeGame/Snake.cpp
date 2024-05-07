@@ -16,7 +16,7 @@ void Snake::Initialize(const sf::Texture& texture)
 	initializeSprite(_bodySprite, texture, tileOrigin, tileScale, sf::IntRect(40, 24, tileSize.x, tileSize.y));
 
 	_moveTimer = Timer(GameSettings::sTimePerCell / GameSettings::GetGameDifficultySettings().timeScale, true);
-	_moveTimer.Subscribe([this]() { UpdatePosition(); });
+	_moveTimer.onTimerFired += std::bind(&Snake::UpdatePosition, this);
 	_moveTimer.Start();
 
 	_headSprite.setPosition(sf::Vector2f(_headPosition));
