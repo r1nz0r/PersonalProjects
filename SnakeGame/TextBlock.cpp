@@ -21,10 +21,10 @@ void TextBlock::AddText(Text& text)
     UpdateBoundingRect();
 }
 
-void TextBlock::AddText(const std::string& content, const sf::Font& font, Text::HorizontalAlignment alignment, const sf::Color& color, unsigned int characterSize)
+void TextBlock::AddText(const std::string& content, const sf::Font& font, const sf::Color& color, unsigned int characterSize)
 {
     {
-        Text newText(content, font, alignment, color, characterSize);
+        Text newText(content, font, color, characterSize);
         AddText(newText);
     }
 }
@@ -33,7 +33,7 @@ void TextBlock::AlignTexts()
 {
     for (Text& text : _texts)
     {
-        text.AlignHorizontally(_boundingRect); // Используем метод из класса Text
+        text.Align(_boundingRect); // Используем метод из класса Text
     }
 }
 

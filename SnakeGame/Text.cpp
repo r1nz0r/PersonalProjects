@@ -1,64 +1,95 @@
 #include "Text.h"
 
-Text::Text() : sf::Text(), _alignment(HorizontalAlignment::Center) {}
+Text::Text() : sf::Text() {}
 
 Text::Text(
     const std::string& content,
     const sf::Font& font,
-    HorizontalAlignment alignment,
     const sf::Color& color,
     unsigned int characterSize
-) : sf::Text(content, font, characterSize), _alignment(alignment)
+) : sf::Text(content, font, characterSize)
 {
     this->setFillColor(color);
 }
 
-inline void Text::SetAlignment(HorizontalAlignment alignment)
-{
-    _alignment = alignment;
-}
 
 void Text::Draw(sf::RenderWindow& window)
 {
     window.draw(*this);
 }
 
-void Text::AlignHorizontally(const float posX)
+void Text::Align
+(
+    const sf::Vector2f& position,
+    const Alignment horizontalAlignment,
+    const Alignment verticalAlignment
+)
 {
-    float x = 0;
+    sf::Vector2f newPosition {};
 
-    switch (_alignment)
+    switch (horizontalAlignment)
     {
-    case HorizontalAlignment::Left:
-        x = posX - getLocalBounds().width;
+    case Alignment::Start:
+        newPosition.x = position.x - getLocalBounds().width;
         break;
-    case HorizontalAlignment::Center:
-        x = posX - getLocalBounds().width / 2;
+    case Alignment::Center:
+        newPosition.x = position.x - getLocalBounds().width / 2;
         break;
-    case HorizontalAlignment::Right:
-        x = posX;
+    case Alignment::End:
+        newPosition.x = position.x;
         break;
     }
 
-    setPosition(x, getPosition().y);
+    switch (verticalAlignment)
+    {
+    case Alignment::Start:
+        newPosition.y = position.y - getLocalBounds().height;
+        break;
+    case Alignment::Center:
+        newPosition.y = position.y - getLocalBounds().height / 2;
+        break;
+    case Alignment::End:
+        newPosition.y = position.y;
+        break;
+    }
+
+    setPosition(newPosition);
 }
 
-void Text::AlignHorizontally(const sf::FloatRect& container)
+void Text::Align
+(
+    const sf::FloatRect& container,
+    const Alignment horizontalAlignment,
+    const Alignment verticalAlignment
+)
 {
-    float x = 0;
+    sf::Vector2f newPosition {};
 
-    switch (_alignment)
+    switch (horizontalAlignment)
     {
-    case HorizontalAlignment::Left:
-        x = container.left;
+    case Alignment::Start:
+        newPosition.x = container.left;
         break;
-    case HorizontalAlignment::Center:
-        x = container.left + (container.width - getLocalBounds().width) / 2;
+    case Alignment::Center:
+        newPosition.x = container.left + (container.width - getLocalBounds().width) / 2;
         break;
-    case HorizontalAlignment::Right:
-        x = container.left + container.width - getLocalBounds().width;
+    case Alignment::End:
+        newPosition.x = container.left + container.width - getLocalBounds().width;
         break;
     }
 
-    setPosition(x, getPosition().y);
+    switch (verticalAlignment)
+    {
+    case Alignment::Start:
+        newPosition.y = container.top;
+        break;
+    case Alignment::Center:
+        newPosition.y = container.top + (container.height - getCharacterSize() * 1.2) / 2; // Коэффициент 1.2 получен подбором, на глаз адекватно получается
+        break;
+    case Alignment::End:
+        newPosition.y = container.top + container.height - getLocalBounds().height;
+        break;
+    }
+
+    setPosition(newPosition);
 }

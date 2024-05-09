@@ -30,7 +30,6 @@ public:
     void AddText(
         const std::string& content,
         const sf::Font& font,
-        Text::HorizontalAlignment alignment = Text::HorizontalAlignment::Center,
         const sf::Color& color = sf::Color::White,
         unsigned int characterSize = 30
     );
