@@ -25,7 +25,7 @@ void Text::Align
     const Alignment verticalAlignment
 )
 {
-    sf::Vector2f newPosition {};
+    sf::Vector2f newPosition { position };
 
     switch (horizontalAlignment)
     {
@@ -37,6 +37,9 @@ void Text::Align
         break;
     case Alignment::End:
         newPosition.x = position.x;
+        break;
+    case Alignment::None:
+    default:
         break;
     }
 
@@ -51,6 +54,9 @@ void Text::Align
     case Alignment::End:
         newPosition.y = position.y;
         break;
+    case Alignment::None:
+    default:
+        break;
     }
 
     setPosition(newPosition);
@@ -63,7 +69,7 @@ void Text::Align
     const Alignment verticalAlignment
 )
 {
-    sf::Vector2f newPosition {};
+    sf::Vector2f newPosition {getPosition()};
 
     switch (horizontalAlignment)
     {
@@ -75,6 +81,9 @@ void Text::Align
         break;
     case Alignment::End:
         newPosition.x = container.left + container.width - getLocalBounds().width;
+        break;
+    case Alignment::None:
+    default:
         break;
     }
 
@@ -88,6 +97,9 @@ void Text::Align
         break;
     case Alignment::End:
         newPosition.y = container.top + container.height - getLocalBounds().height;
+        break;
+    case Alignment::None:
+    default:
         break;
     }
 

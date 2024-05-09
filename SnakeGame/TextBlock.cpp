@@ -33,7 +33,7 @@ void TextBlock::AlignTexts()
 {
     for (Text& text : _texts)
     {
-        text.Align(_boundingRect); // Используем метод из класса Text
+        text.Align(_boundingRect, Text::Alignment::Center, Text::Alignment::None); // Используем метод из класса Text
     }
 }
 

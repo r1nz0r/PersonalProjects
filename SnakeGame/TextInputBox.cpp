@@ -40,7 +40,7 @@ void TextInputBox::UpdateBordersRectSize()
 {
 	sf::Vector2f newBordersSize
 	{
-		_inputText.getLocalBounds().width * _lettersMaxCount * 1.25f, // 1.25 - коэффициент расширения для отделения текста от границ по горизонтали
+		_inputText.getLocalBounds().width * _lettersMaxCount * _BORDER_EXPANSION_COEFFICIENT,
 		static_cast<float>(_inputText.getCharacterSize())
 	};
 
@@ -49,7 +49,7 @@ void TextInputBox::UpdateBordersRectSize()
 
 void TextInputBox::SetBordersVisible(bool bIsVisible)
 {
-	float borderThickness = bIsVisible ? 2.0f : 0.0f;
+	float borderThickness = bIsVisible ? _BORDER_THICKNESS : 0.0f;
 	_textInputBorders.setOutlineThickness(borderThickness);
 }
 
@@ -60,9 +60,17 @@ void TextInputBox::SetPosition(const sf::Vector2f& position)
 
 void TextInputBox::UpdateText(const std::string& text, const sf::Color& color)
 {
+	if (_inputText.getString() == text)
+		return;
+
 	_inputText.setString(text);
 	_inputText.setFillColor(color);
 	_inputText.Align(_textInputBorders.getGlobalBounds());
+}
+
+std::string TextInputBox::GetText() const
+{
+	return _inputText.getString();
 }
 
 void TextInputBox::Draw(sf::RenderWindow& window)
@@ -73,42 +81,53 @@ void TextInputBox::Draw(sf::RenderWindow& window)
 
 std::string TextInputBox::HandleTextEntered(sf::Event& event)
 {
-	if (event.text.unicode == '\b')
-	{ // Backspace, стирание символа
-		if (!_input.empty())
-		{
-			_bIsInputCorrect = true;
-			_input.pop_back();
-			UpdateText(_input, _textColor);
-		}		
+	char character = static_cast<char>(event.text.unicode);
+
+	if (character == _BACKSPACE)
+	{		
+		RemoveLastCharacter();
 	}
 	else if (event.text.unicode > 127)
 	{
 		_bIsInputCorrect = false;
-		ProcessIncorrectInput(); // Некорректный ввод
+		ProcessIncorrectInput();
 	}
-	else if (event.text.unicode != '\r' && event.text.unicode != '\n')
+	else if (character == _ENTER || character == _NEW_LINE)
 	{
-		if (_input.length() < _lettersMaxCount)
-		{ // Добавление символа
-			_bIsInputCorrect = true;
-			_input += static_cast<char>(event.text.unicode);
-			UpdateText(_input, _textColor);
-		}
+		return OnEnterPressed();
 	}
-
-	if (event.text.unicode == '\r' || event.text.unicode == '\n')
-	{ // Если нажата клавиша Enter
-		std::string textToReturn = _input; // Сохраняем строку во временную переменную
-		_input.clear(); // Очищаем исходную строку
-		UpdateText("", _textColor);
-		return textToReturn;
+	else if (_input.length() < _lettersMaxCount)
+	{
+		_bIsInputCorrect = true;
+		_input += character;
+		UpdateText(_input, _textColor);
 	}
 
 	if (_bIsInputCorrect)
 		SetBordersVisible(true);
 
 	return "";
+}
+
+const std::string TextInputBox::OnEnterPressed()
+{
+	if (!_bIsInputCorrect)
+		SetBordersVisible(true);
+
+	std::string textToReturn = _input; // Сохраняем строку во временную переменную
+	_input.clear(); // Очищаем исходную строку
+	UpdateText("", _textColor);
+	return textToReturn;
+}
+
+void TextInputBox::RemoveLastCharacter()
+{
+	if (!_input.empty())
+	{
+		_bIsInputCorrect = true;
+		_input.pop_back();
+		UpdateText(_input, _textColor);
+	}
 }
 
 void TextInputBox::ProcessIncorrectInput()

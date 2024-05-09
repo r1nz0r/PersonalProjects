@@ -12,7 +12,8 @@ public:
     {
         Start,
         Center,
-        End
+        End,
+        None
     };
 
     Text();
