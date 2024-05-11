@@ -148,6 +148,7 @@
     <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextBlock.cpp" />
+    <ClCompile Include="TextInputBox.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="Walls.cpp">
@@ -251,6 +252,7 @@
     <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextBlock.h" />
+    <ClInclude Include="TextInputBox.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Walls.h" />
