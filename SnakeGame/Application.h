@@ -1,8 +1,8 @@
 #pragma once
-
+#include "SFML/Graphics.hpp"
 class Game;
 class Menu;
-
+class TextInputBox;
 class Application
 {
 public:
@@ -19,6 +19,11 @@ public:
 private:
 	Game* _game;
 	Menu* _menu;
+	TextInputBox* _soundCheck;
+	TextInputBox* _musicCheck;
 	Application() = default;
 	~Application();
+	void ShowSettingsCheckBoxes(sf::RenderWindow& window);
+	void CreateSettingsCheckBoxes();
+	void ToggleCheckbox(TextInputBox* checkBox);
 };
