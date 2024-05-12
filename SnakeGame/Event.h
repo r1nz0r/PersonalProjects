@@ -13,7 +13,7 @@ class Event
 {
 public:
 	/**
-	* @brief Деструктор, который автоматически отписывает все обработчики.
+	* @brief Деструктор, который автоматически очищает обработчики.
 	*/
 	~Event();
 
@@ -62,13 +62,12 @@ private:
 	std::vector<EventHandler> _handlers;
 };
 
+
+
 template<typename ...Args>
 inline Event<Args...>::~Event()
 {
-	for (auto& handler : _handlers)
-	{
-		Unsubscribe(handler);
-	}
+	_handlers.clear();
 }
 
 template<typename ...Args>
