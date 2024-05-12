@@ -14,16 +14,23 @@ public:
 	static Application& GetInstance();
 	void Run();
 	void Clear();
+	void SetMenuOpen(bool flag);
 	const Game* GetGame() const { return _game; }
 
 private:
 	Game* _game;
-	Menu* _menu;
+	Menu* _selectedMenu;
+	Menu* _mainMenu;
+	Menu* _difficultyMenu;
+	Menu* _settingsMenu;
+	bool _bIsMenuOpen;
 	TextInputBox* _soundCheck;
 	TextInputBox* _musicCheck;
 	Application() = default;
 	~Application();
+	sf::RenderWindow* _menuWindow;
 	void ShowSettingsCheckBoxes(sf::RenderWindow& window);
 	void CreateSettingsCheckBoxes();
+	void CreateMenuItems(sf::RenderWindow& window);
 	void ToggleCheckbox(TextInputBox* checkBox);
 };

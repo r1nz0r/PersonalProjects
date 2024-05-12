@@ -6,6 +6,7 @@
 #include "Text.h"
 #include "UIManager.h"
 #include "Menu.h"
+#include "Application.h"
 
 Game::Game() : _gameField(_food, _wall), _score(0), _recordsTable()
 {
@@ -154,7 +155,9 @@ void Game::SetDifficulty(EGameDifficulty difficulty)
 
 void Game::ExitGame()
 {
-	_window.close();
+	_window.setActive(false);
+	_window.setVisible(false);
+	Application::GetInstance().SetMenuOpen(true);
 }
 
 void Game::DrawObject(IDrawable& object)
