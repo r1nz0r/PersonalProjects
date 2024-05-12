@@ -5,25 +5,21 @@ class TextBlock
 {
 public:
 
-    enum class HorizontalOrigin
+    enum class Alignment
     {
-        Left,
+        Start,
         Center,
-        Right
+        End,
+        None
     };
 
-    enum class VerticalOrigin
-    {
-        Top,
-        Center,
-        Bottom
-    };
+    TextBlock();
 
     TextBlock(
         const sf::Vector2f& start,
         float verticalSpacing,
-        HorizontalOrigin hOrigin = HorizontalOrigin::Center,
-        VerticalOrigin vOrigin = VerticalOrigin::Center
+        Alignment hOrigin = Alignment::Center,
+        Alignment vOrigin = Alignment::Center
     );
 
     void AddText(Text& text);
@@ -33,7 +29,12 @@ public:
         const sf::Color& color = sf::Color::White,
         unsigned int characterSize = 30
     );
+    const Text& GetText(const int index) const;
+    void SetColor(const int index, const sf::Color& color);
     void AlignTexts();
+    void SetVerticalSpacing(const int spacing);
+    void SetStartPosition(const sf::Vector2f position);
+    void SetAlignmentProperties(const Alignment blockHorizontal, const Alignment blockVertical, const Text::Alignment textHorizontal);
     void Draw(sf::RenderWindow& window) const;
     void Clear();
 
@@ -42,8 +43,9 @@ private:
     sf::Vector2f _start; // Начальная координата текстового блока
     float _verticalSpacing; // Отступ между текстами
     sf::FloatRect _boundingRect; // Границы блока текстов (размер)
-    HorizontalOrigin _hOrigin; // Горизонтальное выравнивание
-    VerticalOrigin _vOrigin; // Вертикальное выравнивание
+    Alignment _hOrigin; // Горизонтальное выравнивание блока
+    Alignment _vOrigin; // Вертикальное выравнивание блока
+    Text::Alignment _textAlignment; // Горизонтальное выравнивание текста внутри блока
 
     void UpdateBoundingRect();
     sf::Vector2f GetOriginAdjustment() const;

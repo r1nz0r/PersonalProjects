@@ -1,8 +1,14 @@
 #include "TextBlock.h"
 
-TextBlock::TextBlock(const sf::Vector2f& start, float verticalSpacing, HorizontalOrigin hOrigin, VerticalOrigin vOrigin)
+TextBlock::TextBlock() : TextBlock({}, 10.0f)
+{
+}
+
+TextBlock::TextBlock(const sf::Vector2f& start, float verticalSpacing, Alignment hOrigin, Alignment vOrigin)
     : _start(start), _verticalSpacing(verticalSpacing), _hOrigin(hOrigin), _vOrigin(vOrigin)
-{}
+{
+    _textAlignment = Text::Alignment::Center;
+}
 
 void TextBlock::AddText(Text& text)
 {
@@ -29,12 +35,45 @@ void TextBlock::AddText(const std::string& content, const sf::Font& font, const 
     }
 }
 
+const Text& TextBlock::GetText(const int index) const
+{
+    if (index > 0 && index < _texts.size())
+    {
+        return _texts[index];
+    }
+}
+
+void TextBlock::SetColor(const int index, const sf::Color& color)
+{
+    if (index >= 0 && index < _texts.size())
+    {
+        _texts[index].setFillColor(color);
+    }
+}
+
 void TextBlock::AlignTexts()
 {
     for (Text& text : _texts)
     {
-        text.Align(_boundingRect, Text::Alignment::Center, Text::Alignment::None); // Используем метод из класса Text
+        text.Align(_boundingRect, _textAlignment, Text::Alignment::None); // Используем метод из класса Text
     }
+}
+
+void TextBlock::SetVerticalSpacing(const int spacing)
+{
+    _verticalSpacing = spacing;
+}
+
+void TextBlock::SetStartPosition(const sf::Vector2f position)
+{
+    _start = position;
+}
+
+void TextBlock::SetAlignmentProperties(const Alignment blockHorizontal, const Alignment blockVertical, const Text::Alignment textHorizontal)
+{
+    _hOrigin = blockHorizontal;
+    _vOrigin = blockVertical;
+    _textAlignment = textHorizontal;
 }
 
 void TextBlock::Draw(sf::RenderWindow& window) const
@@ -90,26 +129,26 @@ sf::Vector2f TextBlock::GetOriginAdjustment() const
 
     switch (_hOrigin)
     {
-    case HorizontalOrigin::Left:
+    case Alignment::Start:
         adjustment.x = 0;
         break;
-    case HorizontalOrigin::Center:
+    case Alignment::Center:
         adjustment.x = -_boundingRect.width / 2;
         break;
-    case HorizontalOrigin::Right:
+    case Alignment::End:
         adjustment.x = -_boundingRect.width;
         break;
     }
 
     switch (_vOrigin)
     {
-    case VerticalOrigin::Top:
+    case Alignment::Start:
         adjustment.y = 0;
         break;
-    case VerticalOrigin::Center:
+    case Alignment::Center:
         adjustment.y = -_boundingRect.height / 2;
         break;
-    case VerticalOrigin::Bottom:
+    case Alignment::End:
         adjustment.y = -_boundingRect.height;
         break;
     }
