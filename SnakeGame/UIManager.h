@@ -4,6 +4,7 @@
 
 class TextBlock;
 class Text;
+class Menu;
 
 class UIManager
 {
@@ -27,11 +28,11 @@ public:
 	void Update();
 	void HandleInput();
 	void DrawPlayingHud(sf::RenderWindow& window);
-	void DrawPauseHud(sf::RenderWindow& window);
+	void DrawPauseHud(sf::RenderWindow& window, Menu* pauseMenu);
 	void DrawPrepareHud(sf::RenderWindow& window);
 	void DrawGameOverHud(sf::RenderWindow& window);
 	void DrawBackground(sf::RenderWindow& window, const sf::Color& color);
-
+	const sf::Font& GetFont() const { return _mainFont; }
 private:
 	UIManager();
 	void CreateHudLabels();
@@ -41,7 +42,6 @@ private:
 	sf::Font _mainFont;
 	Text* _scoreText = nullptr;
 	Text* _timeText = nullptr;
-	Text* _pauseText = nullptr;
 	TextBlock* _gameOverBlock = nullptr;
 	sf::RectangleShape _background;
 };

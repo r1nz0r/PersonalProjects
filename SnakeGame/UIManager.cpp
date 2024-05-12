@@ -6,6 +6,7 @@
 #include "Time.h"
 #include "Game.h"
 #include "TextBlock.h"
+#include "Menu.h"
 
 UIManager& UIManager::GetInstance()
 {
@@ -87,12 +88,14 @@ void UIManager::DrawPrepareHud(sf::RenderWindow& window)
 		_timeText->Draw(window);
 }
 
-void UIManager::DrawPauseHud(sf::RenderWindow& window)
+void UIManager::DrawPauseHud(sf::RenderWindow& window, Menu* pauseMenu)
 {
 	DrawBackground(window, GameSettings::sPauseBackgroundColor);
 
-	if (_pauseText != nullptr)
-		_pauseText->Draw(window);
+	if (!pauseMenu)
+		return;
+
+	pauseMenu->Draw(window);
 }
 
 void UIManager::DrawGameOverHud(sf::RenderWindow& window)
@@ -144,14 +147,7 @@ void UIManager::CreateHudLabels()
 
 	_scoreText = new Text { "", _mainFont, sf::Color::Cyan };
 	_scoreText->setPosition(scoreTextPosition);
-
-	_pauseText = new Text { "PAUSE", _mainFont, sf::Color::Red, 50u };
-	sf::Vector2f pauseLabelPosition
-	{
-		(GameSettings::WINDOW_SIZE.x - _pauseText->getLocalBounds().width) / 2.0f,
-		(GameSettings::WINDOW_SIZE.y - _pauseText->getLocalBounds().height) / 2.0f
-	};
-	_pauseText->setPosition(pauseLabelPosition);
+	
 }
 
 UIManager::~UIManager()
@@ -163,6 +159,5 @@ void UIManager::DeleteLabels()
 {
 	delete _scoreText;
 	delete _timeText;
-	delete _pauseText;
 	delete _gameOverBlock;
 }
