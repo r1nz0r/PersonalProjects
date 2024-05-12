@@ -5,6 +5,7 @@
 #include "GameSettings.h"
 #include "Text.h"
 #include "UIManager.h"
+#include "Menu.h"
 
 Game::Game() : _gameField(_food, _wall), _score(0), _recordsTable()
 {
@@ -35,7 +36,7 @@ void Game::Initialize()
 	_window.create(
 		sf::VideoMode(GameSettings::WINDOW_SIZE.x, GameSettings::WINDOW_SIZE.y),
 		GameSettings::GAME_TITLE
-	);
+	);	
 	_currentDifficulty = EGameDifficulty::Normal;
 	GameSettings::SetGameDifficultySettings(_currentDifficulty);
 	_window.setFramerateLimit(60); //Ограничиваем FPS для избежания слишком быстрой обработки кадров.
@@ -51,10 +52,20 @@ void Game::Initialize()
 	_snake.Initialize(GetTileSetTexture());
 	_food.Initialize(GetTileSetTexture(), sf::Vector2i(48, 0));
 	_wall.Initialize(GetTileSetTexture(), sf::Vector2i(96, 0));
+
+	_window.setVisible(false);
+
+	Menu::ItemsList mainMenuItems
+	{
+		{"Continue", [this]() { std::cout << "Continue game selected!" << std::endl; UnPause(); }},
+		{"Exit", [this]() { std::cout << "Exit game selected!" << std::endl; ExitGame(); }}
+	};
+	_pauseMenu = new Menu { mainMenuItems, UIManager::GetInstance().GetFont() , _window, "Pause" };
 }
 
 void Game::Start()
 {
+	_window.setVisible(true);
 	_currentGameState = EGameState::Prepare;
 	GameSettings::SetGameDifficultySettings(_currentDifficulty);
 	_score = 0;
@@ -136,6 +147,16 @@ void Game::RenderGameState()
 	}
 }
 
+void Game::SetDifficulty(EGameDifficulty difficulty)
+{
+	_currentDifficulty = difficulty;
+}
+
+void Game::ExitGame()
+{
+	_window.close();
+}
+
 void Game::DrawObject(IDrawable& object)
 {
 	object.Draw(_window);
@@ -212,7 +233,7 @@ void Game::RenderPrepareState()
 void Game::RenderPauseState()
 {
 	DrawAllFieldObjects();
-	UIManager::GetInstance().DrawPauseHud(_window);
+	UIManager::GetInstance().DrawPauseHud(_window, _pauseMenu);
 }
 
 void Game::RenderGameOverState()
@@ -259,7 +280,7 @@ void Game::OnKeyPressed(const sf::Keyboard::Scancode& scancode)
 	{
 		Start();
 	}
-	if (scancode == sf::Keyboard::Scancode::P)
+	if (scancode == sf::Keyboard::Scancode::Escape)
 	{
 		TogglePause();
 	}
@@ -280,7 +301,10 @@ void Game::ReadEvents()
 			OnWindowClosed();
 			break;
 		case sf::Event::KeyPressed:
-			OnKeyPressed(event.key.scancode);
+			if (_currentGameState == EGameState::Pause)
+				_pauseMenu->HandleInput(event);
+			else
+				OnKeyPressed(event.key.scancode);
 			break;
 		default:
 			//Остальные события нас не интересуют

@@ -24,6 +24,8 @@ enum class EGameState
 	None
 };
 
+class Menu;
+
 class Game
 {
 public:
@@ -33,11 +35,14 @@ public:
 	~Game() = default;
 	const sf::Texture& GetTileSetTexture() const { return _tileSetTexture; }
 	void LoadResources();
+	void Initialize();
 	void Start();
 	void Update();
 	void UpdateGameState();
 	void Render();
 	void RenderGameState();
+	void SetDifficulty(EGameDifficulty difficulty);
+	void ExitGame();
 	bool IsWindowOpen() const { return _window.isOpen(); }
 	int GetScore() const { return _score; }
 
@@ -59,8 +64,9 @@ private:
 	EGameDifficulty _currentDifficulty;
 	int _score;
 	RecordsTable _recordsTable;
+	
+	Menu* _pauseMenu = nullptr;
 
-	void Initialize();
 	void DrawObject(IDrawable& object);
 	void UpdatePlayingState();
 	void UpdateGameField(const sf::Vector2u& snakePosition);
