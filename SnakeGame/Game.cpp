@@ -7,6 +7,7 @@
 #include "UIManager.h"
 #include "Menu.h"
 #include "Application.h"
+#include "AudioPlayer.h"
 
 Game::Game() : _gameField(_food, _wall), _score(0), _recordsTable()
 {
@@ -74,6 +75,7 @@ void Game::Start()
 	_food.Respawn(GenerateFoodPosition());
 	_playStopwatch.Reset();
 	_startTimer.Start();
+	AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Theme);
 }
 
 void Game::SwitchToPlayingState()
@@ -269,6 +271,7 @@ bool Game::HandleSnakeCollision(const sf::Vector2u& snakePosition)
 void Game::OnGameOver()
 {
 	_currentGameState = EGameState::GameOver;
+	AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Hit);
 	_gameOverTimer.Start();
 }
 
@@ -318,6 +321,7 @@ void Game::ReadEvents()
 
 void Game::OnFoodEaten()
 {
+	AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Eat);
 	_score += _food.Collect();
 	_snake.Grow();
 

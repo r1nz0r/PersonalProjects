@@ -5,6 +5,7 @@
 #include "iostream"
 #include "UIManager.h"
 #include "TextInputBox.h"
+#include "AudioPlayer.h"
 
 Application& Application::GetInstance()
 {
@@ -26,15 +27,19 @@ void Application::ShowSettingsCheckBoxes(sf::RenderWindow& window)
 void Application::CreateSettingsCheckBoxes()
 {
     _soundCheck = new TextInputBox(UIManager::GetInstance().GetFont(), 1u);
+    _soundCheck->SetPosition({ _menuWindow->getSize().x / 1.2f, _menuWindow->getSize().y / 2.3f });
+    _soundCheck->UpdateText("V", sf::Color::Green);
     _musicCheck = new TextInputBox(UIManager::GetInstance().GetFont(), 1u);    
+    _musicCheck->SetPosition({ _menuWindow->getSize().x / 1.2f, _menuWindow->getSize().y / 1.9f });
+    _musicCheck->UpdateText("V", sf::Color::Green);
 }
 
 void Application::CreateMenuItems(sf::RenderWindow& window)
 {
     Menu::ItemsList settingsMenuItems
     {
-        {"Sound", [this]() { std::cout << "Sound selected!" << std::endl; ToggleCheckbox(_soundCheck); }},
-        {"Music", [this]() { std::cout << "Music selected!" << std::endl; ToggleCheckbox(_musicCheck); }},
+        {"Sound", [this]() { std::cout << "Sound selected!" << std::endl; ToggleCheckbox(_soundCheck); AudioPlayer::GetInstance().ToggleSoundMute(); }},
+        {"Music", [this]() { std::cout << "Music selected!" << std::endl; ToggleCheckbox(_musicCheck); AudioPlayer::GetInstance().ToggleMusicMute(); }},
     };
     _settingsMenu = new Menu { settingsMenuItems, UIManager::GetInstance().GetFont() , window, "Settings", 20.0f };
     _settingsMenu->SetMenuItemsAlignment(TextBlock::Alignment::End, TextBlock::Alignment::Center, Text::Alignment::Start);
@@ -95,13 +100,11 @@ void Application::Run()
     _menuWindow = new sf::RenderWindow { sf::VideoMode(300,500), "Menu" };
     CreateMenuItems(*_menuWindow);
     CreateSettingsCheckBoxes();
-    _game = new Game();
-
-    _soundCheck->SetPosition({ _menuWindow->getSize().x / 1.2f, _menuWindow->getSize().y / 2.3f });
-    _musicCheck->SetPosition({ _menuWindow->getSize().x / 1.2f, _menuWindow->getSize().y / 1.9f });
+    _game = new Game();    
 
     _selectedMenu = _mainMenu;
     _bIsMenuOpen = true;
+    
 
     while (_menuWindow->isOpen() && _game->IsWindowOpen())
     {      
@@ -110,20 +113,24 @@ void Application::Run()
             sf::Event menuEvent;
 
             while (_menuWindow->pollEvent(menuEvent))
-            {
+            {                
                 switch (menuEvent.type)
                 {
                 case sf::Event::Closed:
                     _menuWindow->close();
                     break;
-                case sf::Event::KeyPressed:
+                case sf::Event::KeyPressed:                    
                     if (menuEvent.key.scancode == sf::Keyboard::Scancode::Escape)
                     {
+                        AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
+
                         if (_selectedMenu->GetRootItem())
                             _selectedMenu = _selectedMenu->GetRootItem();
                     }
                     else
+                    {
                         _selectedMenu->HandleInput(menuEvent);
+                    }
                     break;
                 default:
                     break;

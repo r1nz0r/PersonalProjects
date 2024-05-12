@@ -1,5 +1,6 @@
 #include "Menu.h"
 #include "GameSettings.h"
+#include "AudioPlayer.h"
 
 Menu::Menu
 (
@@ -67,6 +68,7 @@ void Menu::MoveUp()
 {
 	if (_selectedItemIndex > 0)
 	{
+		AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
 		_itemsBlock.SetColor(_selectedItemIndex, _unselectedItemColor);
 		_selectedItemIndex--;
 		_itemsBlock.SetColor(_selectedItemIndex, _selectedItemColor);
@@ -79,6 +81,7 @@ void Menu::MoveDown()
 
 	if (_selectedItemIndex < MAX_INDEX)
 	{
+		AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
 		_itemsBlock.SetColor(_selectedItemIndex, _unselectedItemColor);
 		_selectedItemIndex++;
 		_itemsBlock.SetColor(_selectedItemIndex, _selectedItemColor);
@@ -91,6 +94,7 @@ void Menu::ExecuteSelectedItem()
 	{
 		if (_items[_selectedItemIndex].second)
 		{
+			AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
 			_items[_selectedItemIndex].second();
 		}
 	}
