@@ -63,6 +63,7 @@ void TextInputBox::UpdateText(const std::string& text, const sf::Color& color)
 	if (_inputText.getString() == text)
 		return;
 
+	_input = text;
 	_inputText.setString(text);
 	_inputText.setFillColor(color);
 	_inputText.Align(_textInputBorders.getGlobalBounds());
@@ -79,14 +80,14 @@ void TextInputBox::Draw(sf::RenderWindow& window)
 	window.draw(_inputText);
 }
 
-std::string TextInputBox::HandleTextEntered(sf::Event& event)
+std::string TextInputBox::HandleTextEntered(const sf::Event& event)
 {
 	char character = static_cast<char>(event.text.unicode);
 
 	if (character == _BACKSPACE)
 	{		
 		RemoveLastCharacter();
-	}
+	}	
 	else if (event.text.unicode > 127)
 	{
 		_bIsInputCorrect = false;
@@ -111,7 +112,7 @@ std::string TextInputBox::HandleTextEntered(sf::Event& event)
 
 const std::string TextInputBox::OnEnterPressed()
 {
-	if (!_bIsInputCorrect)
+	if (!_bIsInputCorrect)			
 		SetBordersVisible(true);
 
 	std::string textToReturn = _input; // Сохраняем строку во временную переменную

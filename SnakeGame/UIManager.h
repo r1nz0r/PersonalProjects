@@ -49,8 +49,11 @@ private:
 	Menu* _selectedMenu;
 	Menu* _mainMenu;
 	Menu* _difficultyMenu;
+	Menu* _enterNameDialog;
 	Menu* _settingsMenu;
 	bool _bIsMenuOpen;
+	bool _bIsInputActive;
+	TextInputBox* _nameInputBox;
 	TextInputBox* _soundCheck;
 	TextInputBox* _musicCheck;
 	sf::RenderWindow* _menuWindow;

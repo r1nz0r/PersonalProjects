@@ -76,7 +76,7 @@ public:
 	* @param event Событие ввода.
 	* @return Возвращает введенный текст, если нажата клавиша Enter, иначе возвращает пустую строку.
 	*/
-	std::string HandleTextEntered(sf::Event& event);
+	std::string HandleTextEntered(const sf::Event& event);
 private:
 	sf::RectangleShape _textInputBorders; // Рамка вокруг поля ввода.
 	std::string _input; // Текущий введенный текст.

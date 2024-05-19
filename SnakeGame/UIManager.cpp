@@ -113,7 +113,11 @@ void UIManager::Update()
 	if (_selectedMenu == _settingsMenu)
 		ShowSettingsCheckBoxes(*_menuWindow);
 
-	_selectedMenu->Draw(*_menuWindow);
+	if (_bIsInputActive)
+		_nameInputBox->Draw(*_menuWindow);
+	else
+		_selectedMenu->Draw(*_menuWindow);
+
 	_menuWindow->display();
 }
 
@@ -129,13 +133,32 @@ void UIManager::HandleInput(const sf::Event& menuEvent)
 		{
 			AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
 
+			if (_bIsMenuOpen && _selectedMenu == _enterNameDialog)
+			{
+				_bIsInputActive = false;
+				_nameInputBox->UpdateText("", sf::Color::White); // Очищаем текст
+			}
+
 			if (_selectedMenu->GetRootItem())
 				_selectedMenu = _selectedMenu->GetRootItem();
 		}
-		else
+		else if (_bIsInputActive == false)
 		{
 			_selectedMenu->HandleInput(menuEvent);
 		}
+		break;
+	case sf::Event::TextEntered:
+		if (_bIsInputActive)
+		{
+			std::string enteredText = _nameInputBox->HandleTextEntered(menuEvent);
+
+			if (!enteredText.empty())
+			{
+				std::cout << enteredText << std::endl;
+				_bIsInputActive = false; 
+				_selectedMenu = _mainMenu;
+			}
+		}			
 		break;
 	default:
 		break;
@@ -222,7 +245,7 @@ void UIManager::CreateSettingsCheckBoxes()
 
 void UIManager::CreateMenuItems()
 {
-	_menuWindow = new sf::RenderWindow { sf::VideoMode(300,500), "Menu" };
+	_menuWindow = new sf::RenderWindow { sf::VideoMode(300,400), "Menu" };
 
 	Menu::ItemsList settingsMenuItems
 	{
@@ -242,11 +265,23 @@ void UIManager::CreateMenuItems()
 	};
 	_difficultyMenu = new Menu { difficultyItems, GetFont(), *_menuWindow, "Difficulty" };
 
+	Menu::ItemsList enterNameItems
+	{
+		{"Yes", [this]() { std::cout << "Yes selected!" << std::endl; _bIsInputActive = true; }},
+		{"No", [this]() { std::cout << "No selected!" << std::endl; _selectedMenu = _mainMenu; }},
+	};
+	_enterNameDialog = new Menu { enterNameItems, GetFont() , *_menuWindow, "Wish to enter name?", 20.0f };
+	_enterNameDialog->SetMenuItemsAlignment(TextBlock::Alignment::Center, TextBlock::Alignment::Center, Text::Alignment::Start);
+
+	_nameInputBox = new TextInputBox { GetFont(), 18u, sf::Color::Green};
+	_nameInputBox->SetPosition({ _menuWindow->getSize().x / 2.0f, _menuWindow->getSize().y / 2.0f});
+	_nameInputBox->SetRelativeOrigin(0.5f, 0.5f);
+
 	Menu::ItemsList mainMenuItems
 	{
 		{"Start", [this]() { std::cout << "Start game selected!" << std::endl; SetMenuOpen(false); Application::GetInstance().GetGame()->Start(); }},
 		{"Difficulty", [this]() { std::cout << "Difficulty selected!" << std::endl; _selectedMenu = _difficultyMenu; }},
-		{"Records table", []() { std::cout << "Records table!" << std::endl; }},
+		{"Records table", [this]() { std::cout << "Records table!" << std::endl; _selectedMenu = _enterNameDialog;}},
 		{"Settings", [this]() { std::cout << "Settings selected!" << std::endl; _selectedMenu = _settingsMenu; }},
 		{"Exit", [this]() { _menuWindow->close(); }}
 	};
@@ -254,6 +289,7 @@ void UIManager::CreateMenuItems()
 
 	_settingsMenu->SetRootItem(_mainMenu);
 	_difficultyMenu->SetRootItem(_mainMenu);
+	_enterNameDialog->SetRootItem(_mainMenu);
 }
 
 void UIManager::ToggleCheckbox(TextInputBox* checkBox)
@@ -285,4 +321,5 @@ void UIManager::Clear()
 	delete _soundCheck;
 	delete _musicCheck;
 	delete _menuWindow;
+	delete _nameInputBox;
 }
