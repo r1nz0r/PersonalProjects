@@ -159,7 +159,7 @@ void Game::ExitGame()
 {
 	_window.setActive(false);
 	_window.setVisible(false);
-	Application::GetInstance().SetMenuOpen(true);
+	UIManager::GetInstance().SetMenuOpen(true);
 }
 
 void Game::DrawObject(IDrawable& object)

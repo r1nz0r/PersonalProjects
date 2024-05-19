@@ -7,6 +7,9 @@
 #include "Game.h"
 #include "TextBlock.h"
 #include "Menu.h"
+#include "TextInputBox.h"
+#include "Application.h"
+#include "AudioPlayer.h"
 
 UIManager& UIManager::GetInstance()
 {
@@ -14,9 +17,34 @@ UIManager& UIManager::GetInstance()
 	return sUiManager;
 }
 
+UIManager::UIManager()
+{
+	try
+	{
+		_mainFont.loadFromFile(_fontPath);
+	}
+	catch (const LoadResourceException& e)
+	{
+		std::cerr << "Error: " << e.what() << std::endl;
+	}
+
+	_background.setSize(sf::Vector2f(GameSettings::WINDOW_SIZE.x, GameSettings::WINDOW_SIZE.y));
+	_background.setFillColor(sf::Color(10, 20, 40, 230)); // Little transparent dark blue color.
+
+	CreateMenuItems();
+	CreateSettingsCheckBoxes();
+	CreateHudLabels();
+}
+
+UIManager::~UIManager()
+{
+	Clear();
+}
+
 void UIManager::ShowMainMenu()
 {
-
+	_selectedMenu = _mainMenu;
+	_bIsMenuOpen = true;
 }
 
 void UIManager::UpdateScoreText(const int score)
@@ -71,6 +99,49 @@ void UIManager::UpdateGameOverLabel(const int score, const int highScore)
 	_gameOverBlock->AlignTexts();
 }
 
+void UIManager::Update()
+{
+	sf::Event menuEvent;
+
+	while (_menuWindow->pollEvent(menuEvent))
+	{
+		HandleInput(menuEvent);
+	}
+
+	_menuWindow->clear();
+
+	if (_selectedMenu == _settingsMenu)
+		ShowSettingsCheckBoxes(*_menuWindow);
+
+	_selectedMenu->Draw(*_menuWindow);
+	_menuWindow->display();
+}
+
+void UIManager::HandleInput(const sf::Event& menuEvent)
+{
+	switch (menuEvent.type)
+	{
+	case sf::Event::Closed:
+		_menuWindow->close();
+		break;
+	case sf::Event::KeyPressed:
+		if (menuEvent.key.scancode == sf::Keyboard::Scancode::Escape)
+		{
+			AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
+
+			if (_selectedMenu->GetRootItem())
+				_selectedMenu = _selectedMenu->GetRootItem();
+		}
+		else
+		{
+			_selectedMenu->HandleInput(menuEvent);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 void UIManager::DrawPlayingHud(sf::RenderWindow& window)
 {
 	if (_scoreText != nullptr)
@@ -112,23 +183,6 @@ void UIManager::DrawBackground(sf::RenderWindow& window, const sf::Color& color)
 	window.draw(_background);
 }
 
-UIManager::UIManager()
-{
-	try
-	{
-		_mainFont.loadFromFile(_fontPath);
-	}
-	catch (const LoadResourceException& e)
-	{
-		std::cerr << "Error: " << e.what() << std::endl;
-	}
-
-	_background.setSize(sf::Vector2f(GameSettings::WINDOW_SIZE.x, GameSettings::WINDOW_SIZE.y));
-	_background.setFillColor(sf::Color(10, 20, 40, 230)); // Little transparent dark blue color.
-
-	CreateHudLabels();
-}
-
 void UIManager::CreateHudLabels()
 {
 	_timeText = new Text {"", _mainFont, sf::Color::White};
@@ -150,14 +204,85 @@ void UIManager::CreateHudLabels()
 	
 }
 
-UIManager::~UIManager()
+void UIManager::ShowSettingsCheckBoxes(sf::RenderWindow& window)
 {
-	DeleteLabels();
+	_soundCheck->Draw(window);
+	_musicCheck->Draw(window);
 }
 
-void UIManager::DeleteLabels()
+void UIManager::CreateSettingsCheckBoxes()
+{
+	_soundCheck = new TextInputBox(GetFont(), 1u);
+	_soundCheck->SetPosition({ _menuWindow->getSize().x / 1.2f, _menuWindow->getSize().y / 2.3f });
+	_soundCheck->UpdateText("V", sf::Color::Green);
+	_musicCheck = new TextInputBox(GetFont(), 1u);
+	_musicCheck->SetPosition({ _menuWindow->getSize().x / 1.2f, _menuWindow->getSize().y / 1.9f });
+	_musicCheck->UpdateText("V", sf::Color::Green);
+}
+
+void UIManager::CreateMenuItems()
+{
+	_menuWindow = new sf::RenderWindow { sf::VideoMode(300,500), "Menu" };
+
+	Menu::ItemsList settingsMenuItems
+	{
+		{"Sound", [this]() { std::cout << "Sound selected!" << std::endl; ToggleCheckbox(_soundCheck); AudioPlayer::GetInstance().ToggleSoundMute(); }},
+		{"Music", [this]() { std::cout << "Music selected!" << std::endl; ToggleCheckbox(_musicCheck); AudioPlayer::GetInstance().ToggleMusicMute(); }},
+	};
+	_settingsMenu = new Menu { settingsMenuItems, GetFont() , *_menuWindow, "Settings", 20.0f };
+	_settingsMenu->SetMenuItemsAlignment(TextBlock::Alignment::End, TextBlock::Alignment::Center, Text::Alignment::Start);
+
+	Menu::ItemsList difficultyItems
+	{
+		{"Beginner", [this]() { std::cout << "Beginner selected!" << std::endl; Application::GetInstance().GetGame()->SetDifficulty(EGameDifficulty::Beginner); _selectedMenu = _mainMenu; }},
+		{"Easy", [this]() { std::cout << "Easy selected!" << std::endl; Application::GetInstance().GetGame()->SetDifficulty(EGameDifficulty::Easy); _selectedMenu = _mainMenu; }},
+		{"Normal", [this]() { std::cout << "Normal selected!" << std::endl; Application::GetInstance().GetGame()->SetDifficulty(EGameDifficulty::Normal); _selectedMenu = _mainMenu; }},
+		{"Hard", [this]() { std::cout << "Hard selected!" << std::endl; Application::GetInstance().GetGame()->SetDifficulty(EGameDifficulty::Hard); _selectedMenu = _mainMenu; }},
+		{"Insane", [this]() { std::cout << "Insane selected!" << std::endl; Application::GetInstance().GetGame()->SetDifficulty(EGameDifficulty::Insane); _selectedMenu = _mainMenu; }},
+	};
+	_difficultyMenu = new Menu { difficultyItems, GetFont(), *_menuWindow, "Difficulty" };
+
+	Menu::ItemsList mainMenuItems
+	{
+		{"Start", [this]() { std::cout << "Start game selected!" << std::endl; SetMenuOpen(false); Application::GetInstance().GetGame()->Start(); }},
+		{"Difficulty", [this]() { std::cout << "Difficulty selected!" << std::endl; _selectedMenu = _difficultyMenu; }},
+		{"Records table", []() { std::cout << "Records table!" << std::endl; }},
+		{"Settings", [this]() { std::cout << "Settings selected!" << std::endl; _selectedMenu = _settingsMenu; }},
+		{"Exit", [this]() { _menuWindow->close(); }}
+	};
+	_mainMenu = new Menu { mainMenuItems, GetFont(), *_menuWindow, "Snake Game" };
+
+	_settingsMenu->SetRootItem(_mainMenu);
+	_difficultyMenu->SetRootItem(_mainMenu);
+}
+
+void UIManager::ToggleCheckbox(TextInputBox* checkBox)
+{
+	if (!checkBox)
+		return;
+
+	if (checkBox->GetText() == "")
+		checkBox->UpdateText("V", sf::Color::Green);
+	else
+		checkBox->UpdateText("", sf::Color::Black);
+}
+
+void UIManager::SetMenuOpen(bool flag)
+{
+	_bIsMenuOpen = flag;
+	_menuWindow->setVisible(flag);
+	_menuWindow->setActive(flag);
+}
+
+void UIManager::Clear()
 {
 	delete _scoreText;
 	delete _timeText;
 	delete _gameOverBlock;
+	delete _selectedMenu;
+	delete _difficultyMenu;
+	delete _settingsMenu;
+	delete _soundCheck;
+	delete _musicCheck;
+	delete _menuWindow;
 }
