@@ -84,6 +84,9 @@ std::string TextInputBox::HandleTextEntered(const sf::Event& event)
 {
 	char character = static_cast<char>(event.text.unicode);
 
+	if (_input._Equal(_INCORRECT_INPUT_HINT))
+		UpdateText("", sf::Color::Green);
+
 	if (character == _BACKSPACE)
 	{		
 		RemoveLastCharacter();

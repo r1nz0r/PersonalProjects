@@ -67,6 +67,7 @@ void TextBlock::SetVerticalSpacing(const int spacing)
 void TextBlock::SetStartPosition(const sf::Vector2f position)
 {
     _start = position;
+    UpdateTextPositions();
 }
 
 void TextBlock::SetAlignmentProperties(const Alignment blockHorizontal, const Alignment blockVertical, const Text::Alignment textHorizontal)
@@ -154,4 +155,23 @@ sf::Vector2f TextBlock::GetOriginAdjustment() const
     }
 
     return adjustment;
+}
+
+void TextBlock::UpdateTextPositions()
+{
+    if (_texts.empty())
+    {
+        return;
+    }
+
+    sf::Vector2f position = _start;
+
+    for (Text& text : _texts)
+    {
+        text.setPosition(position);
+        sf::FloatRect textBounds = text.getGlobalBounds();
+        position.y += textBounds.height + _verticalSpacing;
+    }
+
+    UpdateBoundingRect();
 }

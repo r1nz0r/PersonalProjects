@@ -26,6 +26,7 @@ public:
 	virtual ~Menu() {}
 	virtual void Draw(sf::RenderWindow& window) override;
 	void HandleInput(const sf::Event& event);
+	void SetPosition(const sf::Vector2f& position);
 	void SetRootItem(Menu* root);
 	void SetMenuItemsAlignment(const TextBlock::Alignment horizontal, const TextBlock::Alignment vertical, const Text::Alignment textHorizontal);
 	Menu* GetRootItem() const;

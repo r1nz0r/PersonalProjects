@@ -48,5 +48,6 @@ private:
     Text::Alignment _textAlignment; // Горизонтальное выравнивание текста внутри блока
 
     void UpdateBoundingRect();
+    void UpdateTextPositions();
     sf::Vector2f GetOriginAdjustment() const;
 };

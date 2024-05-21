@@ -286,7 +286,6 @@ void UIManager::CreateMenuItems()
 		{"Exit", [this]() { _menuWindow->close(); }}
 	};
 	_mainMenu = new Menu { mainMenuItems, GetFont(), *_menuWindow, "Snake Game" };
-
 	_settingsMenu->SetRootItem(_mainMenu);
 	_difficultyMenu->SetRootItem(_mainMenu);
 	_enterNameDialog->SetRootItem(_mainMenu);

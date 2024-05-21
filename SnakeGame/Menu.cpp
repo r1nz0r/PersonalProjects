@@ -48,6 +48,11 @@ void Menu::HandleInput(const sf::Event& event)
 	}
 }
 
+void Menu::SetPosition(const sf::Vector2f& position)
+{
+	_itemsBlock.SetStartPosition(position);
+}
+
 void Menu::SetRootItem(Menu* root)
 {
 	_root = root;
