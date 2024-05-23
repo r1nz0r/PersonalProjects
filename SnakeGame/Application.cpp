@@ -27,13 +27,12 @@ void Application::Run()
 
     uiManager.ShowMainMenu();
 
-    while (uiManager.GetMenuWindow().isOpen() && _game->IsWindowOpen())
+    while (uiManager.IsMenuOpen() || _game->IsWindowOpen())
     {      
         if (uiManager.IsMenuOpen())
         {
             uiManager.Update();
         }
-
         else
         {
             _game->Update();

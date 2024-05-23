@@ -1,4 +1,6 @@
 ﻿#include <random>
+#include <fstream>
+#include <algorithm>
 #include <SFML/Window/Event.hpp>
 #include "Game.h"
 #include "Exception.h"
@@ -34,11 +36,12 @@ void Game::LoadResources()
 void Game::Initialize()
 {
 	std::srand(static_cast<unsigned>(time(nullptr)));
+	DeserializeGame();
 
 	_window.create(
 		sf::VideoMode(GameSettings::WINDOW_SIZE.x, GameSettings::WINDOW_SIZE.y),
 		GameSettings::GAME_TITLE
-	);	
+	);
 	_currentDifficulty = EGameDifficulty::Normal;
 	GameSettings::SetGameDifficultySettings(_currentDifficulty);
 	_window.setFramerateLimit(60); //Ограничиваем FPS для избежания слишком быстрой обработки кадров.
@@ -112,11 +115,8 @@ void Game::UpdateGameState()
 	case EGameState::Prepare:
 		UpdatePrepareState();
 		break;
-	case EGameState::Menu:
-		//TODO menu logic
-		break;
 	case EGameState::Pause:
-		//TODO pause logic
+		//Просто скипаем, меню обрабатывает UI.
 		break;
 	case EGameState::GameOver:
 		UpdateGameOverState();
@@ -135,9 +135,6 @@ void Game::RenderGameState()
 		break;
 	case EGameState::Prepare:
 		RenderPrepareState();
-		break;
-	case EGameState::Menu:
-		//TODO menu logic
 		break;
 	case EGameState::Pause:
 		RenderPauseState();
@@ -211,9 +208,26 @@ void Game::UpdatePrepareState()
 
 void Game::UpdateGameOverState()
 {
-	_recordsTable["You"] = std::max(_score, _recordsTable["You"]);
-	UIManager::GetInstance().UpdateGameOverLabel(_score, _recordsTable["You"]);
+	if (UIManager::GetInstance().IsMenuOpen())
+		return;
+
 	_gameOverTimer.Update();
+}
+
+void Game::UpdateRecordsTable()
+{
+	int maxScoresPerScreen = 10;
+	_recordsTable.insert({ _playerName, _score });
+
+	if (_recordsTable.size() > maxScoresPerScreen)
+	{
+		auto it = _recordsTable.end();
+		std::advance(it, -std::distance(_recordsTable.begin(), _recordsTable.end()) + maxScoresPerScreen);
+		_recordsTable.erase(it, _recordsTable.end());
+	}
+
+	UIManager::GetInstance().UpdateGameOverLabel(_score, _recordsTable.rbegin()->score);
+	SerializeGame();
 }
 
 void Game::DrawAllFieldObjects()
@@ -270,8 +284,20 @@ bool Game::HandleSnakeCollision(const sf::Vector2u& snakePosition)
 
 void Game::OnGameOver()
 {
+	AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Hit);	
 	_currentGameState = EGameState::GameOver;
-	AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Hit);
+
+	if (_recordsTable.empty() || _score > _recordsTable.rbegin()->score)
+	{
+		UIManager::GetInstance().ShowNewRecordMenu();		
+	}
+	else
+		StartGameOverState();
+
+}
+
+void Game::StartGameOverState()
+{
 	_gameOverTimer.Start();
 }
 
@@ -353,6 +379,47 @@ void Game::UnPause()
 {
 	_currentGameState = EGameState::Prepare;
 	_startTimer.Start();
+}
+
+bool Game::SerializeGame()
+{
+	std::ofstream fileOutput(GameSettings::RECORDS_TABLE_FILE_NAME);
+	
+	if (!fileOutput.is_open())
+	{
+		std::cerr << "Cant open file " << GameSettings::RECORDS_TABLE_FILE_NAME << " for write.";
+		return false;
+	}
+
+	for (const auto& record : _recordsTable)
+	{
+		fileOutput << record.name << " " << record.score << std::endl;
+	}
+
+	fileOutput.close();
+	return true;
+}
+
+bool Game::DeserializeGame()
+{
+	std::ifstream fileInput(GameSettings::RECORDS_TABLE_FILE_NAME);
+
+	if (!fileInput.is_open())
+	{
+		std::cerr << "Cant open file " << GameSettings::RECORDS_TABLE_FILE_NAME << " for read.";
+		return false;
+	}
+
+	std::string name;
+	int score;
+
+	while (fileInput >> name >> score)
+	{
+		_recordsTable.insert(PlayerScore(name, score));
+	}
+
+	fileInput.close();
+	return true;
 }
 
 void Game::Pause()

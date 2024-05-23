@@ -58,9 +58,8 @@ public:
 	// Настройки стены
 	static const sf::Vector2f WALL_SIZE;
 
-	// Настройки звуков
-	static const float EAT_SOUND_VOLUME;
-	static const float DEATH_SOUND_VOLUME;
+	// Файл сохранения
+	inline static const std::string RECORDS_TABLE_FILE_NAME = "records.txt";
 
 	//Параметры крайних элементов поля
 	inline static const sf::Vector2u sPositionOfLeftTopTile

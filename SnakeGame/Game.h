@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <string>
-#include <map>
+#include <set>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -19,17 +19,37 @@ enum class EGameState
 	Playing,
 	Prepare,
 	Pause,
-	Menu,
 	GameOver,
 	None
 };
 
 class Menu;
 
+struct PlayerScore
+{
+	std::string name;
+	int score;
+
+	PlayerScore(const std::string& name_, int score_) : name(name_), score(score_) {}
+};
+
+struct CompareScores
+{
+	bool operator()(const PlayerScore& a, const PlayerScore& b) const
+	{
+		if (a.score == b.score)
+		{
+			return a.name < b.name; // Для уникальности при одинаковых очках
+		}
+
+		return a.score > b.score; // Сортировка по убыванию очков
+	}
+};
+
 class Game
 {
 public:
-	using RecordsTable = std::unordered_map<std::string, int>;
+	using RecordsTable = std::multiset<PlayerScore, CompareScores>;
 
 	Game();
 	~Game() = default;
@@ -41,11 +61,15 @@ public:
 	void UpdateGameState();
 	void Render();
 	void RenderGameState();
+	RecordsTable GetRecordsTable() const { return _recordsTable; }
 	void SetDifficulty(EGameDifficulty difficulty);
 	void ExitGame();
 	bool IsWindowOpen() const { return _window.isOpen(); }
 	int GetScore() const { return _score; }
-
+	void SetPlayerName(const std::string& name) { _playerName = name; };
+	std::string GetPlayerName() const { return _playerName; }
+	void UpdateRecordsTable();
+	void StartGameOverState();
 private:
 	const std::string _tileSetPath = R"(Resources/Textures/snake.png)";
 	EGameState _currentGameState = EGameState::None;
@@ -64,7 +88,8 @@ private:
 	EGameDifficulty _currentDifficulty;
 	int _score;
 	RecordsTable _recordsTable;
-	
+	std::string _playerName;
+
 	Menu* _pauseMenu = nullptr;
 
 	void DrawObject(IDrawable& object);
@@ -86,6 +111,8 @@ private:
 	void OnFoodEaten();
 	void TogglePause();
 	void UnPause();
+	bool SerializeGame();
+	bool DeserializeGame();
 	void Pause();
 	uint32_t GetRandomUInt(const uint32_t minValue, const uint32_t maxValue);
 	sf::Vector2u GenerateFoodPosition();

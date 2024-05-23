@@ -9,6 +9,7 @@ Menu::Menu
 	sf::RenderWindow& window,
 	std::string title,
 	const float verticalSpacing,
+	bool bInputEnabled,
 	Menu* root,
 	const sf::Color selectedColor,
 	const sf::Color unselectedColor
@@ -18,7 +19,8 @@ Menu::Menu
 	_root(root),
 	_selectedItemIndex(0),
 	_selectedItemColor(selectedColor),
-	_unselectedItemColor(unselectedColor)
+	_unselectedItemColor(unselectedColor),
+	_bInputEnabled(bInputEnabled)
 {
 	SetupText(verticalSpacing);
 	SetupTitle(title);
@@ -32,6 +34,9 @@ void Menu::Draw(sf::RenderWindow& window)
 
 void Menu::HandleInput(const sf::Event& event)
 {
+	if (!_bInputEnabled)
+		return;
+
 	switch (event.key.code)
 	{
 	case sf::Keyboard::W:
@@ -62,6 +67,16 @@ void Menu::SetMenuItemsAlignment(const TextBlock::Alignment horizontal, const Te
 {
 	_itemsBlock.SetAlignmentProperties(horizontal, vertical, textHorizontal);
 	_itemsBlock.AlignTexts();
+}
+
+void Menu::EnableInput()
+{
+	_bInputEnabled = true;
+}
+
+void Menu::DisableInput()
+{
+	_bInputEnabled = false;		
 }
 
 Menu* Menu::GetRootItem() const
@@ -115,7 +130,7 @@ void Menu::SetupText(const float verticalSpacing)
 	for (const auto& item : _items)	
 		_itemsBlock.AddText(item.first, _font, sf::Color::White, 25); // Добавляем текст в блок	
 
-	if (!_items.empty())
+	if (!_items.empty() && _bInputEnabled)
 		_itemsBlock.SetColor(0, _selectedItemColor);
 
 	_itemsBlock.AlignTexts();

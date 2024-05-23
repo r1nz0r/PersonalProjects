@@ -70,7 +70,8 @@ AudioPlayer::AudioPlayer()
 	}
 
 	_musicVolume = 80.0f;
-	_soundVolume = 100.0f;
+	_soundVolume = 30.0f;
+	_currentSound.setVolume(_soundVolume);
 	_bMusicMuted = false;
 	_bSoundMuted = false;
 }

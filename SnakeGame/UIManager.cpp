@@ -44,7 +44,13 @@ UIManager::~UIManager()
 void UIManager::ShowMainMenu()
 {
 	_selectedMenu = _mainMenu;
-	_bIsMenuOpen = true;
+	SetMenuOpen(true);
+}
+
+void UIManager::ShowNewRecordMenu()
+{
+	_selectedMenu = _enterNameDialog;
+	SetMenuOpen(true);
 }
 
 void UIManager::UpdateScoreText(const int score)
@@ -92,10 +98,24 @@ void UIManager::UpdateGameOverLabel(const int score, const int highScore)
 	if (!_gameOverBlock)
 		return;
 
+	const auto& recordsTable = Application::GetInstance().GetGame()->GetRecordsTable();
+	int counter = 0;
+
 	_gameOverBlock->Clear();
 	_gameOverBlock->AddText(std::string("Game Over!"), _mainFont);
 	_gameOverBlock->AddText(std::string("Your score is - " + std::to_string(score)), _mainFont);
-	_gameOverBlock->AddText(std::string("High score is - " + std::to_string(highScore)), _mainFont);
+	_gameOverBlock->AddText(std::string("High scores:\n"), _mainFont);
+
+	for (const auto& [name, value] : recordsTable)
+	{
+		if (counter >= 5)
+			break;
+
+		++counter;
+		std::string item = name + "\t" + std::to_string(value);
+		_gameOverBlock->AddText(item, _mainFont);
+	}
+	
 	_gameOverBlock->AlignTexts();
 }
 
@@ -129,40 +149,53 @@ void UIManager::HandleInput(const sf::Event& menuEvent)
 		_menuWindow->close();
 		break;
 	case sf::Event::KeyPressed:
-		if (menuEvent.key.scancode == sf::Keyboard::Scancode::Escape)
-		{
-			AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
-
-			if (_bIsMenuOpen && _selectedMenu == _enterNameDialog)
-			{
-				_bIsInputActive = false;
-				_nameInputBox->UpdateText("", sf::Color::White); // Очищаем текст
-			}
-
-			if (_selectedMenu->GetRootItem())
-				_selectedMenu = _selectedMenu->GetRootItem();
-		}
-		else if (_bIsInputActive == false)
-		{
-			_selectedMenu->HandleInput(menuEvent);
-		}
+		if (menuEvent.key.scancode == sf::Keyboard::Scancode::Escape)		
+			OnEscapePressed();		
+		else if (_bIsInputActive == false)		
+			_selectedMenu->HandleInput(menuEvent);		
 		break;
 	case sf::Event::TextEntered:
-		if (_bIsInputActive)
-		{
-			std::string enteredText = _nameInputBox->HandleTextEntered(menuEvent);
-
-			if (!enteredText.empty())
-			{
-				std::cout << enteredText << std::endl;
-				_bIsInputActive = false; 
-				_selectedMenu = _mainMenu;
-			}
-		}			
+		if (_bIsInputActive)		
+			ProcessUserTextInput(menuEvent);		
 		break;
 	default:
 		break;
 	}
+}
+
+void UIManager::ProcessUserTextInput(const sf::Event& menuEvent)
+{
+	std::string enteredText = _nameInputBox->HandleTextEntered(menuEvent);
+
+	if (!enteredText.empty())
+	{
+		Application::GetInstance().GetGame()->SetPlayerName(enteredText);
+		std::cout << Application::GetInstance().GetGame()->GetPlayerName() << std::endl;
+		_bIsInputActive = false;
+
+		if (Application::GetInstance().GetGame()->IsWindowOpen())
+		{
+			SetMenuOpen(false);
+			Application::GetInstance().GetGame()->UpdateRecordsTable();
+			Application::GetInstance().GetGame()->StartGameOverState();
+		}
+		else
+			_selectedMenu = _mainMenu;
+	}
+}
+
+void UIManager::OnEscapePressed()
+{
+	AudioPlayer::GetInstance().PlaySound(AudioPlayer::ESound::Menu);
+
+	if (_bIsMenuOpen && _selectedMenu == _enterNameDialog)
+	{
+		_bIsInputActive = false;
+		_nameInputBox->UpdateText("", sf::Color::White); // Очищаем текст
+	}
+
+	if (_selectedMenu->GetRootItem())
+		_selectedMenu = _selectedMenu->GetRootItem();
 }
 
 void UIManager::DrawPlayingHud(sf::RenderWindow& window)
@@ -267,10 +300,16 @@ void UIManager::CreateMenuItems()
 
 	Menu::ItemsList enterNameItems
 	{
-		{"Yes", [this]() { std::cout << "Yes selected!" << std::endl; _bIsInputActive = true; }},
-		{"No", [this]() { std::cout << "No selected!" << std::endl; _selectedMenu = _mainMenu; }},
+		{"Yes", [this]() { std::cout << "Yes selected!" << std::endl; _bIsInputActive = true; _selectedMenu = _mainMenu; }},
+		{"No", [this]() {
+			std::cout << "No selected!" << std::endl;
+			_selectedMenu = _mainMenu; SetMenuOpen(false);
+			Application::GetInstance().GetGame()->SetPlayerName("XYZ");
+			Application::GetInstance().GetGame()->UpdateRecordsTable();
+			Application::GetInstance().GetGame()->StartGameOverState();
+		}},
 	};
-	_enterNameDialog = new Menu { enterNameItems, GetFont() , *_menuWindow, "Wish to enter name?", 20.0f };
+	_enterNameDialog = new Menu { enterNameItems, GetFont() , *_menuWindow, "Enter name?", 20.0f };
 	_enterNameDialog->SetMenuItemsAlignment(TextBlock::Alignment::Center, TextBlock::Alignment::Center, Text::Alignment::Start);
 
 	_nameInputBox = new TextInputBox { GetFont(), 18u, sf::Color::Green};
@@ -281,13 +320,31 @@ void UIManager::CreateMenuItems()
 	{
 		{"Start", [this]() { std::cout << "Start game selected!" << std::endl; SetMenuOpen(false); Application::GetInstance().GetGame()->Start(); }},
 		{"Difficulty", [this]() { std::cout << "Difficulty selected!" << std::endl; _selectedMenu = _difficultyMenu; }},
-		{"Records table", [this]() { std::cout << "Records table!" << std::endl; _selectedMenu = _enterNameDialog;}},
+		{"Records table", [this]() { std::cout << "Records table!" << std::endl; CreateMenuRecordsTable(); _selectedMenu = _recordsMenu;}},
 		{"Settings", [this]() { std::cout << "Settings selected!" << std::endl; _selectedMenu = _settingsMenu; }},
 		{"Exit", [this]() { _menuWindow->close(); }}
 	};
 	_mainMenu = new Menu { mainMenuItems, GetFont(), *_menuWindow, "Snake Game" };
+
+	if (_settingsMenu == nullptr)
+	{
+		std::cerr << "Settings menu does not exists!";
+		return;
+	}		
 	_settingsMenu->SetRootItem(_mainMenu);
+
+	if (_difficultyMenu == nullptr)
+	{
+		std::cerr << "Difficulty menu does not exists!";
+		return;
+	}
 	_difficultyMenu->SetRootItem(_mainMenu);
+
+	if (_enterNameDialog == nullptr)
+	{
+		std::cerr << "Enter name menu does not exists!";
+		return;
+	}
 	_enterNameDialog->SetRootItem(_mainMenu);
 }
 
@@ -300,6 +357,35 @@ void UIManager::ToggleCheckbox(TextInputBox* checkBox)
 		checkBox->UpdateText("V", sf::Color::Green);
 	else
 		checkBox->UpdateText("", sf::Color::Black);
+}
+
+void UIManager::CreateMenuRecordsTable()
+{
+	if (_recordsMenu != nullptr)
+		delete _recordsMenu;
+
+	const auto& recordsTable = Application::GetInstance().GetGame()->GetRecordsTable();
+
+	Menu::ItemsList recordItems{};
+
+	if (recordsTable.empty())
+		recordItems.push_back({"Empty", nullptr});
+	else
+	{
+		int counter = 0;
+
+		for (const auto& [name, value] : recordsTable)
+		{	
+			if (counter >= 10)
+				break;
+
+			++counter;
+			std::string item = name + "\t" + std::to_string(value);
+			recordItems.push_back({ item, nullptr });
+		}
+	}
+
+	_recordsMenu = new Menu { recordItems, GetFont(), *_menuWindow, "Records Table", 6.0f, false, _mainMenu};
 }
 
 void UIManager::SetMenuOpen(bool flag)
@@ -321,4 +407,5 @@ void UIManager::Clear()
 	delete _musicCheck;
 	delete _menuWindow;
 	delete _nameInputBox;
+	delete _recordsMenu;
 }

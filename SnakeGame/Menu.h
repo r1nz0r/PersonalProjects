@@ -19,6 +19,7 @@ public:
 		sf::RenderWindow& window,
 		std::string title = "",
 		const float verticalSpacing = 10.0f,
+		bool bInputEnabled = true,
 		Menu* root = nullptr,
 		const sf::Color selectedColor = sf::Color::Green,
 		const sf::Color unselectedColor = sf::Color::White
@@ -29,6 +30,8 @@ public:
 	void SetPosition(const sf::Vector2f& position);
 	void SetRootItem(Menu* root);
 	void SetMenuItemsAlignment(const TextBlock::Alignment horizontal, const TextBlock::Alignment vertical, const Text::Alignment textHorizontal);
+	void EnableInput();
+	void DisableInput();
 	Menu* GetRootItem() const;
 
 private:
@@ -41,6 +44,7 @@ private:
 	sf::RenderWindow& _window;
 	int _selectedItemIndex;
 	Menu* _root;
+	bool _bInputEnabled;
 
 	void MoveUp();
 	void MoveDown();
