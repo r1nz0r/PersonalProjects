@@ -40,7 +40,8 @@ void Game::Initialize()
 
 	_window.create(
 		sf::VideoMode(GameSettings::WINDOW_SIZE.x, GameSettings::WINDOW_SIZE.y),
-		GameSettings::GAME_TITLE
+		GameSettings::GAME_TITLE,
+		sf::Style::Close
 	);
 	_currentDifficulty = EGameDifficulty::Normal;
 	GameSettings::SetGameDifficultySettings(_currentDifficulty);
@@ -156,6 +157,7 @@ void Game::ExitGame()
 {
 	_window.setActive(false);
 	_window.setVisible(false);
+	AudioPlayer::GetInstance().StopMusic();
 	UIManager::GetInstance().SetMenuOpen(true);
 }
 
@@ -292,7 +294,10 @@ void Game::OnGameOver()
 		UIManager::GetInstance().ShowNewRecordMenu();		
 	}
 	else
+	{
 		StartGameOverState();
+		UIManager::GetInstance().UpdateGameOverLabel(_score, _recordsTable.rbegin()->score);
+	}
 
 }
 

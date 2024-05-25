@@ -228,8 +228,8 @@ void UIManager::DrawPauseHud(sf::RenderWindow& window, Menu* pauseMenu)
 void UIManager::DrawGameOverHud(sf::RenderWindow& window)
 {
 	DrawBackground(window, GameSettings::sGameOverBackgroundColor);
-
-	if (_gameOverBlock != nullptr)
+		
+	if (_gameOverBlock != nullptr && !IsMenuOpen())
 		_gameOverBlock->Draw(window);
 }
 
@@ -278,7 +278,7 @@ void UIManager::CreateSettingsCheckBoxes()
 
 void UIManager::CreateMenuItems()
 {
-	_menuWindow = new sf::RenderWindow { sf::VideoMode(300,400), "Menu" };
+	_menuWindow = new sf::RenderWindow { sf::VideoMode(300,400), "Menu", sf::Style::Titlebar };
 
 	Menu::ItemsList settingsMenuItems
 	{
@@ -385,7 +385,8 @@ void UIManager::CreateMenuRecordsTable()
 		}
 	}
 
-	_recordsMenu = new Menu { recordItems, GetFont(), *_menuWindow, "Records Table", 6.0f, false, _mainMenu};
+	_recordsMenu = new Menu { recordItems, GetFont(), *_menuWindow, "Records Table", 12.0f, false, _mainMenu};
+	_recordsMenu->SetPosition({ _menuWindow->getSize().x / 2.0f, _menuWindow->getSize().y / 1.8f });
 }
 
 void UIManager::SetMenuOpen(bool flag)

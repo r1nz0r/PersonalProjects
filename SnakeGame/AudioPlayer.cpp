@@ -27,7 +27,7 @@ void AudioPlayer::ToggleMusicMute()
 		_currentMusic.setVolume(_musicVolume);
 }
 
-void AudioPlayer::PlaySound(ESound soundType)
+void AudioPlayer::PlaySound(const ESound soundType)
 {
 	switch (soundType)
 	{
@@ -55,6 +55,11 @@ void AudioPlayer::PlaySound(ESound soundType)
 	}
 }
 
+void AudioPlayer::StopMusic()
+{
+	_currentMusic.stop();
+}
+
 AudioPlayer::AudioPlayer()
 {
 	try
@@ -74,4 +79,5 @@ AudioPlayer::AudioPlayer()
 	_currentSound.setVolume(_soundVolume);
 	_bMusicMuted = false;
 	_bSoundMuted = false;
+	_currentMusic.setLoop(true);
 }

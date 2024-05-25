@@ -56,6 +56,7 @@ void Menu::HandleInput(const sf::Event& event)
 void Menu::SetPosition(const sf::Vector2f& position)
 {
 	_itemsBlock.SetStartPosition(position);
+	_itemsBlock.AlignTexts();
 }
 
 void Menu::SetRootItem(Menu* root)

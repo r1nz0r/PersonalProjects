@@ -21,13 +21,14 @@ public:
 	AudioPlayer& operator=(AudioPlayer&& other) noexcept = delete;
 	void ToggleSoundMute();
 	void ToggleMusicMute();
-	void PlaySound(ESound soundType);
+	void PlaySound(const ESound soundType);
+	void StopMusic();
 private:
 	AudioPlayer();
-	const std::string _themePath = R"(Resources/Audio/Clinthammer__Background_Music.wav)";
-	const std::string _eatPath = R"(Resources/Audio/Owlstorm__Snake_hit.wav)";
-	const std::string _hitPath = R"(Resources/Audio/Maodin204__Lose.wav)";
-	const std::string _menuPath = R"(Resources/Audio/Theevilsocks__menu-hover.wav)";
+	const std::string _themePath = R"(Resources/Audio/PlayingMusic.wav)";
+	const std::string _eatPath = R"(Resources/Audio/EatSound.wav)";
+	const std::string _hitPath = R"(Resources/Audio/Hit.wav)";
+	const std::string _menuPath = R"(Resources/Audio/MenuSelection.wav)";
 	sf::SoundBuffer _themeBuffer;
 	sf::SoundBuffer _eatBuffer;
 	sf::SoundBuffer _hitBuffer;
