@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include "IDrawable.h"
 
+// Base class for entities in the game.
 class BaseEntity : public IDrawable
 {
 public:

@@ -122,8 +122,7 @@ void Menu::ExecuteSelectedItem()
 }
 
 void Menu::SetupText(const float verticalSpacing)
-{
-	
+{	
 	_itemsBlock.Clear(); // Очищаем все предыдущие тексты, если они были
 	_itemsBlock.SetStartPosition(sf::Vector2f(_window.getSize().x / 2, _window.getSize().y / 2)); // Устанавливаем начальную позицию блока текста
 	_itemsBlock.SetVerticalSpacing(verticalSpacing); // Устанавливаем вертикальный интервал между текстами

@@ -49,6 +49,5 @@ private:
 	EDirection _movementDirection = EDirection::None;
 	Timer _moveTimer;
 	sf::Vector2u _velocity { 0, 0 };
-	const int OPPOSITE_DIRECTION_DIFF = 2;
 	sf::Vector2u DirectionToVelocity(const EDirection direction);
 };

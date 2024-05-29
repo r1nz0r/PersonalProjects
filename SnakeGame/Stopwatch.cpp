@@ -43,6 +43,8 @@ float Stopwatch::GetElapsedTimeSeconds() const
     if (!_bIsRunning) // Проверяем стоит ли таймер на паузе
         return _accumulatedTime.count(); // Возвращаем аккумулированное время
 
-    auto seconds = _accumulatedTime.count() + std::chrono::duration_cast<duration>(GetCurrentSystemTime() - _startTime).count();
+    auto seconds = _accumulatedTime.count() +
+        std::chrono::duration_cast<duration>(GetCurrentSystemTime() - _startTime).count();
+
     return seconds;
 }

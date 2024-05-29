@@ -173,14 +173,9 @@ void UIManager::ProcessUserTextInput(const sf::Event& menuEvent)
 		std::cout << Application::GetInstance().GetGame()->GetPlayerName() << std::endl;
 		_bIsInputActive = false;
 
-		if (Application::GetInstance().GetGame()->IsWindowOpen())
-		{
-			SetMenuOpen(false);
-			Application::GetInstance().GetGame()->UpdateRecordsTable();
-			Application::GetInstance().GetGame()->StartGameOverState();
-		}
-		else
-			_selectedMenu = _mainMenu;
+		SetMenuOpen(false);
+		Application::GetInstance().GetGame()->UpdateRecordsTable();
+		Application::GetInstance().GetGame()->StartGameOverState();	
 	}
 }
 
@@ -322,7 +317,7 @@ void UIManager::CreateMenuItems()
 		{"Difficulty", [this]() { std::cout << "Difficulty selected!" << std::endl; _selectedMenu = _difficultyMenu; }},
 		{"Records table", [this]() { std::cout << "Records table!" << std::endl; CreateMenuRecordsTable(); _selectedMenu = _recordsMenu;}},
 		{"Settings", [this]() { std::cout << "Settings selected!" << std::endl; _selectedMenu = _settingsMenu; }},
-		{"Exit", [this]() { _menuWindow->close(); }}
+		{"Exit", [this]() { _menuWindow->close(); exit(0); }}
 	};
 	_mainMenu = new Menu { mainMenuItems, GetFont(), *_menuWindow, "Snake Game" };
 
@@ -401,7 +396,6 @@ void UIManager::Clear()
 	delete _scoreText;
 	delete _timeText;
 	delete _gameOverBlock;
-	delete _selectedMenu;
 	delete _difficultyMenu;
 	delete _settingsMenu;
 	delete _soundCheck;

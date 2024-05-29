@@ -140,7 +140,6 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameField.cpp" />
     <ClCompile Include="GameMain.cpp" />
-    <ClCompile Include="IDrawable.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="SnakeController.cpp" />

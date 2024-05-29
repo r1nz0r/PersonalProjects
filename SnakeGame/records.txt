@@ -1,10 +1,1 @@
-XYZ 216
-awdawq 168
-XYZ 108
-qwerty 100
-Player1 84
-newPlayer 84
-qweqqqq 80
-qwert 80
-XYZ 72
-XYZ 72
+XYZ 84

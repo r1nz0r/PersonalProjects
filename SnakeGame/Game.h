@@ -99,10 +99,6 @@ private:
 	void UpdateGameOverState();
 	void SwitchToPlayingState();
 	void DrawAllFieldObjects();
-	void RenderPlayingState();
-	void RenderPrepareState();
-	void RenderPauseState();
-	void RenderGameOverState();
 	bool HandleSnakeCollision(const sf::Vector2u& snakePosition);
 	void OnGameOver();
 	void OnWindowClosed();

@@ -36,7 +36,7 @@ public:
 
 private:
 	ItemsList _items;
-	TextBlock _itemsBlock;
+	TextBlock _itemsBlock; // Text block for displaying menu items.
 	Text _title;
 	sf::Color _selectedItemColor;
 	sf::Color _unselectedItemColor;

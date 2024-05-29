@@ -132,16 +132,19 @@ void Game::RenderGameState()
 	switch (_currentGameState)
 	{
 	case EGameState::Playing:
-		RenderPlayingState();
+		DrawAllFieldObjects();
+		UIManager::GetInstance().DrawPlayingHud(_window);
 		break;
 	case EGameState::Prepare:
-		RenderPrepareState();
+		DrawAllFieldObjects();
+		UIManager::GetInstance().DrawPrepareHud(_window);
 		break;
 	case EGameState::Pause:
-		RenderPauseState();
+		DrawAllFieldObjects();
+		UIManager::GetInstance().DrawPauseHud(_window, _pauseMenu);
 		break;
 	case EGameState::GameOver:
-		RenderGameOverState();
+		UIManager::GetInstance().DrawGameOverHud(_window);
 		break;
 	default:
 		break;
@@ -239,28 +242,6 @@ void Game::DrawAllFieldObjects()
 	DrawObject(_snake);
 }
 
-void Game::RenderPlayingState()
-{
-	DrawAllFieldObjects();
-	UIManager::GetInstance().DrawPlayingHud(_window);
-}
-
-void Game::RenderPrepareState()
-{
-	DrawAllFieldObjects();
-	UIManager::GetInstance().DrawPrepareHud(_window);
-}
-
-void Game::RenderPauseState()
-{
-	DrawAllFieldObjects();
-	UIManager::GetInstance().DrawPauseHud(_window, _pauseMenu);
-}
-
-void Game::RenderGameOverState()
-{
-	UIManager::GetInstance().DrawGameOverHud(_window);
-}
 
 bool Game::HandleSnakeCollision(const sf::Vector2u& snakePosition)
 {
