@@ -115,7 +115,7 @@ void Snake::SetDirection(const EDirection newDirection)
 		
 	// Если хвост змейки не "пуст" и есть коллизия между головой и началом хвоста при новом направлении движения,
 	// то выходим из метода не меняя направление.
-	if (_bodyPositions.empty() != true && *_bodyPositions.begin() == newHeadPosition)
+	if (!_bodyPositions.empty() && *_bodyPositions.begin() == newHeadPosition)
 	{
 		return;
 	}
